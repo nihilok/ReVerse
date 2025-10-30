@@ -109,8 +109,8 @@ PRACTICAL_APPLICATION: [your analysis]`;
       });
       
       // Extract text from response
-      const content = message.content[0];
-      const text = content.type === 'text' ? content.text : '';
+      const content = Array.isArray(message.content) && message.content.length > 0 ? message.content[0] : undefined;
+      const text = content && content.type === 'text' ? content.text : '';
       
       return this.parseInsights(text);
     } catch (error) {
@@ -248,8 +248,8 @@ Answer questions thoughtfully and in depth. Draw from biblical scholarship, theo
       });
       
       // Extract text from response
-      const content = response.content[0];
-      return content.type === 'text' ? content.text : '';
+      const content = response.content && response.content.length > 0 ? response.content[0] : undefined;
+      return content && content.type === 'text' ? content.text : '';
     } catch (error) {
       console.error('Error generating standalone chat response:', error);
       throw new Error('Failed to generate chat response');
@@ -272,8 +272,10 @@ Answer questions thoughtfully and in depth. Draw from biblical scholarship, theo
         ],
       });
       
-      const content = response.content[0];
-      const title = content.type === 'text' ? content.text.trim() : 'Bible Chat';
+      const content = Array.isArray(response.content) && response.content.length > 0 ? response.content[0] : undefined;
+      const title = content && content.type === 'text' && typeof content.text === 'string'
+        ? content.text.trim()
+        : 'Bible Chat';
       
       // Remove quotes if AI added them
       return title.replace(/^["']|["']$/g, '').substring(0, 200);

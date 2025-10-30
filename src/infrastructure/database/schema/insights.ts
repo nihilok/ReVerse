@@ -17,7 +17,9 @@ export const insights = pgTable('insights', {
   userIdIdx: index('insights_user_id_idx').on(table.userId),
   createdAtIdx: index('insights_created_at_idx').on(table.createdAt),
   favoriteIdx: index('insights_favorite_idx').on(table.userId, table.isFavorite),
-  uniquePassage: unique('insights_unique_passage').on(table.userId, table.passageReference, table.passageText),
+  // Use only userId and passageReference for uniqueness to avoid large index on passageText
+  // This prevents duplicate insights for the same passage reference per user
+  uniquePassage: unique('insights_unique_passage').on(table.userId, table.passageReference),
 }));
 
 export type Insight = typeof insights.$inferSelect;
