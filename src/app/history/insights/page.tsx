@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { InsightsList } from "@/components/insights/InsightsList";
 import { InsightsModal } from "@/components/insights/InsightsModal";
+import { AlertDialog } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import type { InsightData } from "@/domain/bible.types";
@@ -25,8 +26,10 @@ export default function InsightsHistoryPage() {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [selectedInsight, setSelectedInsight] = useState<Insight | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [insightToDelete, setInsightToDelete] = useState<string | null>(null);
 
-  const loadInsights = async () => {
+  const loadInsights = useCallback(async () => {
     setIsLoading(true);
     try {
       const params = new URLSearchParams({
@@ -44,12 +47,11 @@ export default function InsightsHistoryPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [showFavoritesOnly]);
 
   useEffect(() => {
     loadInsights();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showFavoritesOnly]);
+  }, [loadInsights]);
 
   const handleViewInsight = async (id: string) => {
     try {
@@ -77,13 +79,16 @@ export default function InsightsHistoryPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this insight?")) {
-      return;
-    }
+  const handleDelete = (id: string) => {
+    setInsightToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!insightToDelete) return;
 
     try {
-      const response = await fetch(`/api/insights/${id}`, {
+      const response = await fetch(`/api/insights/${insightToDelete}`, {
         method: "DELETE",
       });
       if (response.ok) {
@@ -91,6 +96,8 @@ export default function InsightsHistoryPage() {
       }
     } catch (error) {
       console.error("Failed to delete insight:", error);
+    } finally {
+      setInsightToDelete(null);
     }
   };
 
@@ -137,6 +144,17 @@ export default function InsightsHistoryPage() {
         reference={selectedInsight?.passageReference}
         isFavorite={selectedInsight?.isFavorite}
         onToggleFavorite={() => selectedInsight && handleToggleFavorite(selectedInsight.id)}
+      />
+
+      <AlertDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Delete Insight"
+        description="Are you sure you want to delete this insight? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="destructive"
+        onConfirm={confirmDelete}
       />
     </div>
   );

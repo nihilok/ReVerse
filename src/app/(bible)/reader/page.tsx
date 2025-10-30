@@ -45,7 +45,12 @@ export default function ReaderPage() {
   // Sidebar state
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  // Load initial passage
+  /**
+   * Load initial passage on mount using default state values.
+   * This effect runs only once on mount. Subsequent passage loads are triggered by user actions
+   * (e.g., via handleSearch), not by changes to state variables. The empty dependency array
+   * prevents unnecessary re-runs and infinite loops.
+   */
   useEffect(() => {
     handleSearch({
       book: currentBook,
@@ -91,8 +96,9 @@ export default function ReaderPage() {
     handleSearch({ book, chapter, translation: currentTranslation });
   };
 
-  const handleViewInsight = () => {
+  const handleViewInsight = (id: string) => {
     // Fetch and display insight - will be implemented when insights are loaded
+    console.log("View insight:", id);
     setShowInsightsModal(true);
   };
 
