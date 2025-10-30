@@ -7,3 +7,7 @@ export * from './roles';
 export * from './permissions';
 export * from './role-permissions';
 export * from './user-roles';
+export * from './insights';
+export * from './chats';
+export * from './passages';
+export * from './user-preferences';
