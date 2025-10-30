@@ -1,26 +1,197 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Light mode colors - inspired by ancient manuscripts, parchment, and illuminated texts */
+  /* Warm cream/parchment background with rich burgundy and gold accents */
+  --color-background: oklch(97% 0.015 75); /* Warm cream, like aged parchment */
+  --color-foreground: oklch(25% 0.02 30); /* Deep warm brown/sepia for text */
+  --color-card: oklch(99% 0.01 75); /* Lighter cream for elevated surfaces */
+  --color-card-foreground: oklch(25% 0.02 30);
+  --color-popover: oklch(99% 0.01 75);
+  --color-popover-foreground: oklch(25% 0.02 30);
+  --color-primary: oklch(42% 0.15 25); /* Deep burgundy/wine red - royal manuscripts */
+  --color-primary-foreground: oklch(98% 0.01 75);
+  --color-secondary: oklch(88% 0.03 50); /* Soft gold/amber accent */
+  --color-secondary-foreground: oklch(25% 0.02 30);
+  --color-muted: oklch(92% 0.015 65); /* Subtle warm grey */
+  --color-muted-foreground: oklch(48% 0.015 40); /* Muted warm brown */
+  --color-accent: oklch(85% 0.08 50); /* Rich gold accent */
+  --color-accent-foreground: oklch(25% 0.02 30);
+  --color-destructive: oklch(55% 0.18 25);
+  --color-destructive-foreground: oklch(98% 0.01 75);
+  --color-border: oklch(88% 0.02 60); /* Subtle warm border */
+  --color-input: oklch(95% 0.015 70);
+  --color-ring: oklch(42% 0.15 25); /* Burgundy focus ring */
+
+  /* Typography - elegant serif fonts for biblical content */
+  --font-sans: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
+  /* Border radius - slightly more refined */
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.25rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* Base styles */
+@layer base {
+  * {
+    @apply border-border;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    @apply bg-background text-foreground;
+    font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    font-feature-settings: "rlig" 1, "calt" 1, "liga" 1;
+    letter-spacing: 0.01em;
+    line-height: 1.7;
+  }
+
+  /* Enhanced typography hierarchy */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    color: oklch(35% 0.08 25);
+  }
+
+  h2 {
+    font-size: 2rem;
+    color: oklch(35% 0.08 25);
+  }
+
+  /* Refined scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: oklch(94% 0.015 70);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: oklch(75% 0.04 45);
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(65% 0.06 40);
+  }
+
+  /* Thin scrollbar for insights modal - more subtle */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: oklch(85% 0.03 50 / 0.4);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: oklch(75% 0.04 45 / 0.6);
+  }
+
+  /* Firefox scrollbar styling */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(85% 0.03 50 / 0.4) transparent;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Prose styles for markdown content - enhanced for biblical reading */
+@layer utilities {
+  .prose {
+    @apply text-foreground;
+    max-width: 75ch;
+  }
+
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    @apply text-foreground font-semibold;
+    color: oklch(35% 0.08 25);
+    letter-spacing: -0.01em;
+  }
+
+  .prose h1 {
+    @apply text-3xl mt-8 mb-5;
+    border-bottom: 2px solid oklch(85% 0.08 50);
+    padding-bottom: 0.5rem;
+  }
+
+  .prose h2 {
+    @apply text-2xl mt-7 mb-4;
+  }
+
+  .prose h3 {
+    @apply text-xl mt-6 mb-3;
+  }
+
+  .prose p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  .prose a {
+    @apply text-primary underline underline-offset-2;
+    font-weight: 500;
+  }
+
+  .prose a:hover {
+    color: oklch(50% 0.15 25);
+  }
+
+  .prose code {
+    @apply bg-muted px-1.5 py-0.5 rounded text-sm;
+    font-family: ui-monospace, monospace;
+  }
+
+  .prose pre {
+    @apply bg-muted p-4 rounded-lg overflow-x-auto;
+  }
+
+  .prose blockquote {
+    @apply border-l-4 border-primary pl-4 italic my-6;
+    color: oklch(40% 0.05 35);
+  }
+
+  .prose ul, .prose ol {
+    @apply my-4 pl-6;
+  }
+
+  .prose li {
+    @apply mb-2;
+  }
+}
+
+/* Dark mode theme */
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-background: oklch(18% 0.02 30); /* Deep warm brown background */
+    --color-foreground: oklch(95% 0.01 75); /* Warm cream text */
+    --color-card: oklch(22% 0.02 30); /* Slightly lighter for cards */
+    --color-card-foreground: oklch(95% 0.01 75);
+    --color-popover: oklch(22% 0.02 30);
+    --color-popover-foreground: oklch(95% 0.01 75);
+    --color-primary: oklch(65% 0.15 25); /* Lighter burgundy for dark mode */
+    --color-primary-foreground: oklch(98% 0.01 75);
+    --color-secondary: oklch(35% 0.03 50); /* Darker gold accent */
+    --color-secondary-foreground: oklch(95% 0.01 75);
+    --color-muted: oklch(28% 0.015 35);
+    --color-muted-foreground: oklch(70% 0.015 60);
+    --color-accent: oklch(45% 0.08 50); /* Muted gold accent */
+    --color-accent-foreground: oklch(95% 0.01 75);
+    --color-destructive: oklch(60% 0.18 25);
+    --color-destructive-foreground: oklch(98% 0.01 75);
+    --color-border: oklch(32% 0.02 35);
+    --color-input: oklch(25% 0.015 35);
+    --color-ring: oklch(65% 0.15 25);
+  }
 }
