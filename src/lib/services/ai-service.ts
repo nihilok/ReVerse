@@ -17,16 +17,23 @@ interface ChatContext {
  * AI service for generating insights and chat responses using Claude
  */
 class AIService {
-  private client: Anthropic;
+  private client: Anthropic | null = null;
   
-  constructor() {
-    if (!process.env.ANTHROPIC_API_KEY) {
-      throw new Error('ANTHROPIC_API_KEY environment variable is required');
+  /**
+   * Get or initialize the Anthropic client
+   */
+  private getClient(): Anthropic {
+    if (!this.client) {
+      if (!process.env.ANTHROPIC_API_KEY) {
+        throw new Error('ANTHROPIC_API_KEY environment variable is required');
+      }
+      
+      this.client = new Anthropic({
+        apiKey: process.env.ANTHROPIC_API_KEY,
+      });
     }
     
-    this.client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
-    });
+    return this.client;
   }
   
   /**
@@ -97,7 +104,7 @@ PRACTICAL_APPLICATION: [your analysis]`;
     try {
       const prompt = this.buildInsightPrompt(request);
       
-      const message = await this.client.messages.create({
+      const message = await this.getClient().messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1500,
         messages: [
@@ -178,7 +185,7 @@ Answer questions thoughtfully and in depth. Draw from biblical scholarship, theo
         content: message,
       });
       
-      const response = await this.client.messages.create({
+      const response = await this.getClient().messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 2000,
         system: systemPrompt,
@@ -240,7 +247,7 @@ Answer questions thoughtfully and in depth. Draw from biblical scholarship, theo
         content: message,
       });
       
-      const response = await this.client.messages.create({
+      const response = await this.getClient().messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 2000,
         system: systemPrompt,
@@ -261,7 +268,7 @@ Answer questions thoughtfully and in depth. Draw from biblical scholarship, theo
    */
   async generateChatTitle(firstMessage: string): Promise<string> {
     try {
-      const response = await this.client.messages.create({
+      const response = await this.getClient().messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 50,
         messages: [
