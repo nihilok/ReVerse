@@ -26,12 +26,11 @@ class InsightsService {
   async getOrCreateInsight(params: CreateInsightParams): Promise<Insight> {
     const { userId, passageText, passageReference } = params;
     
-    // Check if insight already exists for this user and passage
+    // Check if insight already exists for this user and passage reference
     const existing = await db.query.insights.findFirst({
       where: and(
         eq(insights.userId, userId),
         eq(insights.passageReference, passageReference),
-        eq(insights.passageText, passageText),
         isNull(insights.deletedAt)
       ),
     });

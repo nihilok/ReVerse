@@ -201,7 +201,7 @@ class ChatService {
         eq(chatMessages.chatId, chatId),
         isNull(chatMessages.deletedAt)
       ),
-      orderBy: [desc(chatMessages.createdAt)],
+      orderBy: [chatMessages.createdAt],
     });
   }
   
