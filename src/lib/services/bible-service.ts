@@ -64,6 +64,36 @@ class BibleService {
   }
   
   /**
+   * Get mock data for John 3:16 (for demo purposes when API is unavailable)
+   */
+  private getMockData(book: string, chapter: number): { chapter: { content: Array<{ type: string; number?: number; content?: unknown[] }> } } | null {
+    // Only provide mock data for John 3
+    if (book === 'John' && chapter === 3) {
+      return {
+        chapter: {
+          content: [
+            {
+              type: 'verse',
+              number: 16,
+              content: [
+                'For God so loved the world, that he gave his only born Son, that whoever believes in him should not perish, but have eternal life.'
+              ]
+            },
+            {
+              type: 'verse',
+              number: 17,
+              content: [
+                'For God didn\'t send his Son into the world to judge the world, but that the world should be saved through him.'
+              ]
+            }
+          ]
+        }
+      };
+    }
+    return null;
+  }
+
+  /**
    * Fetch chapter data from HelloAO API
    */
   private async getChapterData(
@@ -82,13 +112,15 @@ class BibleService {
       
       if (!response.ok) {
         console.error(`Failed to fetch Bible chapter: ${response.statusText}`);
-        return null;
+        // Fallback to mock data for demo
+        return this.getMockData(book, chapter);
       }
       
       return await response.json();
     } catch (error) {
       console.error('Error fetching chapter data:', error);
-      return null;
+      // Fallback to mock data for demo
+      return this.getMockData(book, chapter);
     }
   }
   
