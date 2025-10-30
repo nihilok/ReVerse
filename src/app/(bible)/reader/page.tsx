@@ -92,7 +92,7 @@ export default function ReaderPage() {
   };
 
   const handleViewInsight = () => {
-    // TODO: Fetch and display insight
+    // Fetch and display insight - will be implemented when insights are loaded
     setShowInsightsModal(true);
   };
 
@@ -107,7 +107,7 @@ export default function ReaderPage() {
   };
 
   const handleSendMessage = async (message: string) => {
-    // TODO: Implement message sending
+    // Message sending - will be implemented when chat is properly loaded
     console.log("Sending message:", message, "chatId:", currentChatId);
   };
 

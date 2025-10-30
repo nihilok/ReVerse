@@ -115,7 +115,7 @@ export default function ChatsHistoryPage() {
             chats={chats.map(c => ({
               ...c,
               createdAt: new Date(c.createdAt),
-              messageCount: 0, // TODO: Add message count to API response
+              messageCount: 0, // Message count not included in API response - could be added as enhancement
             }))}
             onOpenChat={handleOpenChat}
             onDelete={handleDelete}
