@@ -14,12 +14,13 @@ export default function SettingsPage() {
   const [theme, setTheme] = useState("system");
 
   const handleSave = async () => {
-    // TODO: Implement saving user preferences
+    // Save preferences - will need user preferences API endpoint
     console.log("Saving preferences:", {
       defaultTranslation,
       fontSize,
       theme,
     });
+    alert("Settings will be saved once user preferences API is implemented");
   };
 
   return (
