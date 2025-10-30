@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { ChatList } from "@/components/chat/ChatList";
 import { ChatModal } from "@/components/chat/ChatModal";
+import { AlertDialog } from "@/components/ui/alert-dialog";
 
 interface Chat {
   id: string;
@@ -25,6 +26,8 @@ export default function ChatsHistoryPage() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [isSendingMessage, setIsSendingMessage] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [chatToDelete, setChatToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     loadChats();
@@ -82,24 +85,29 @@ export default function ChatsHistoryPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this chat?")) {
-      return;
-    }
+  const handleDelete = (id: string) => {
+    setChatToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!chatToDelete) return;
 
     try {
-      const response = await fetch(`/api/chat/${id}`, {
+      const response = await fetch(`/api/chat/${chatToDelete}`, {
         method: "DELETE",
       });
       if (response.ok) {
         loadChats();
-        if (selectedChatId === id) {
+        if (selectedChatId === chatToDelete) {
           setShowModal(false);
           setSelectedChatId(null);
         }
       }
     } catch (error) {
       console.error("Failed to delete chat:", error);
+    } finally {
+      setChatToDelete(null);
     }
   };
 
@@ -115,7 +123,8 @@ export default function ChatsHistoryPage() {
             chats={chats.map(c => ({
               ...c,
               createdAt: new Date(c.createdAt),
-              messageCount: 0, // Message count not included in API response - could be added as enhancement
+              // messageCount intentionally omitted; not available from API
+              messageCount: 0,
             }))}
             onOpenChat={handleOpenChat}
             onDelete={handleDelete}
@@ -135,6 +144,17 @@ export default function ChatsHistoryPage() {
         isLoading={isSendingMessage}
         title={selectedChat?.title || "Chat"}
         reference={selectedChat?.passageReference}
+      />
+
+      <AlertDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Delete Chat"
+        description="Are you sure you want to delete this chat? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="destructive"
+        onConfirm={confirmDelete}
       />
     </div>
   );

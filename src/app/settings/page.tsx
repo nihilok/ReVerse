@@ -6,12 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Toast } from "@/components/ui/toast";
 import { BIBLE_TRANSLATIONS } from "@/domain/bible.types";
 
 export default function SettingsPage() {
   const [defaultTranslation, setDefaultTranslation] = useState("WEB");
   const [fontSize, setFontSize] = useState("base");
   const [theme, setTheme] = useState("system");
+  const [showToast, setShowToast] = useState(false);
 
   const handleSave = async () => {
     // Save preferences - will need user preferences API endpoint
@@ -20,7 +22,7 @@ export default function SettingsPage() {
       fontSize,
       theme,
     });
-    alert("Settings will be saved once user preferences API is implemented");
+    setShowToast(true);
   };
 
   return (
@@ -97,6 +99,14 @@ export default function SettingsPage() {
           </div>
         </div>
       </main>
+
+      {showToast && (
+        <Toast
+          message="Settings will be saved once user preferences API is implemented"
+          type="info"
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 }
