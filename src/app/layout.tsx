@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 
 export const metadata: Metadata = {
-  title: "NextJS App Template",
-  description: "Full-stack NextJS application with PostgreSQL, Better Auth, and DDD architecture",
+  title: "ReVerse - Bible Reading App",
+  description: "Full-stack Bible reading application with AI-powered insights and chat features",
 };
 
 export default function RootLayout({
@@ -29,7 +30,9 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

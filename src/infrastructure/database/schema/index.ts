@@ -11,3 +11,4 @@ export * from './insights';
 export * from './chats';
 export * from './passages';
 export * from './user-preferences';
+export * from './passkeys';
