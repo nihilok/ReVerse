@@ -6,12 +6,9 @@ import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<"light" | "dark" | null>(null);
-  const [mounted, setMounted] = useState(false);
 
   // Initialize theme after mount to avoid hydration mismatch
   useEffect(() => {
-    setMounted(true);
-    
     // Get initial theme from localStorage or system preference
     const storedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
     if (storedTheme) {
@@ -39,8 +36,8 @@ export function ThemeToggle() {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
-  // Don't render anything until mounted to avoid hydration mismatch
-  if (!mounted || !theme) {
+  // Don't render anything until theme is loaded to avoid hydration mismatch
+  if (!theme) {
     return (
       <Button variant="ghost" size="sm" disabled>
         <Sun className="h-5 w-5" />
