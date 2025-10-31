@@ -142,23 +142,25 @@ export function BibleReader({
   }
 
   return (
-    <Card className="h-full" ref={readerRef}>
-      <CardHeader>
+    <Card className="h-full flex flex-col" ref={readerRef}>
+      <CardHeader className="flex-shrink-0">
         <CardTitle>{passage.reference}</CardTitle>
         <p className="text-sm text-muted-foreground">{passage.translation}</p>
       </CardHeader>
-      <CardContent ref={contentRef} className="relative">
-        <div className="prose dark:prose-invert max-w-none">
-          <p className="leading-relaxed text-base">
-            {passage.verses.map((verse) => (
-              <VerseDisplay
-                key={`${verse.chapter}-${verse.verse}`}
-                verse={verse}
-                onSelect={onVerseSelect ? () => onVerseSelect(verse.verse) : undefined}
-                isSelected={selectedVerse === verse.verse}
-              />
-            ))}
-          </p>
+      <CardContent ref={contentRef} className="relative overflow-y-auto flex-1">
+        <div className="max-w-3xl mx-auto">
+          <div className="prose dark:prose-invert max-w-none">
+            <p className="leading-relaxed text-base">
+              {passage.verses.map((verse) => (
+                <VerseDisplay
+                  key={`${verse.chapter}-${verse.verse}`}
+                  verse={verse}
+                  onSelect={onVerseSelect ? () => onVerseSelect(verse.verse) : undefined}
+                  isSelected={selectedVerse === verse.verse}
+                />
+              ))}
+            </p>
+          </div>
         </div>
 
         {/* Text selection tooltip */}

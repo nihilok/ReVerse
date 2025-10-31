@@ -112,7 +112,7 @@ export default function InsightsHistoryPage() {
       <AppHeader user={null} />
 
       <main className="flex-1 overflow-y-auto">
-        <div className="container max-w-4xl py-8">
+        <div className="container max-w-4xl mx-auto py-8 px-6">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold">Insights History</h1>
             <Button
