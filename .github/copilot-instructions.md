@@ -1,7 +1,7 @@
 # Copilot Instructions for ReVerse Repository
 
 ## Repository Overview
-ReVerse is a NextJS Full Stack Bible Reading Application with AI-powered insights and chat features. It's built on a modern tech stack with user authentication and personalized features.
+ReVerse is a NextJS Full Stack Bible Reading Application with AI-powered insights and chat features. This is a complete NextJS port of the [Verse](https://github.com/nihilok/Verse) application (originally React + FastAPI), now fully migrated with improved architecture and user experience.
 
 ## Development Guidelines
 
@@ -12,8 +12,17 @@ ReVerse is a NextJS Full Stack Bible Reading Application with AI-powered insight
 - **Authentication**: Better Auth for email/password authentication
 - **AI Integration**: Anthropic Claude AI (Sonnet 4.5) for insights and chat
 - **Bible API**: HelloAO Bible API for scripture content
+- **Styling**: Tailwind CSS v4 with custom parchment-inspired theme
+- **UI Components**: Radix UI primitives via shadcn/ui pattern
 - **Testing**: Vitest with Testing Library
 - **Type**: Full-stack Bible reading application with AI features
+
+### Design Philosophy
+- **Theme**: Warm parchment-inspired aesthetic with burgundy and gold accents
+- **Typography**: Elegant serif fonts (Georgia, Cambria) for biblical content
+- **Dark Mode**: Warm brown tones instead of harsh blacks
+- **Accessibility**: WCAG compliant with semantic HTML and ARIA attributes
+- **Mobile-First**: Responsive design that adapts to all screen sizes
 
 ### Code Style and Standards
 - Follow Next.js best practices and conventions
@@ -43,6 +52,14 @@ ReVerse is a NextJS Full Stack Bible Reading Application with AI-powered insight
 - Ensure components are testable and follow best practices
 - Test both client and server-side code when applicable
 - Use in-memory mocks for integration tests
+
+### Component Architecture
+- **Server Components by Default**: Use "use client" only when needed
+- **Composition Over Props Drilling**: Break down complex components
+- **Accessibility First**: Use semantic HTML and ARIA attributes
+- **Loading States**: Provide skeleton loaders for async operations
+- **Error Boundaries**: Wrap components that may fail
+- **Hydration Safety**: Avoid using localStorage/window during SSR
 
 ### Dependencies
 - Keep dependencies up to date

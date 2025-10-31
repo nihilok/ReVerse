@@ -1,28 +1,42 @@
-# NextJS 16 Full Stack App Template
+# ReVerse - NextJS Bible Reading Application
 
-A production-ready NextJS 16 template with PostgreSQL, Better Auth, and Domain-Driven Design architecture.
+A modern, full-stack Bible reading application built with NextJS 16, featuring AI-powered insights and chat capabilities. This is a complete port of the [Verse](https://github.com/nihilok/Verse) application from React + FastAPI to NextJS.
 
 ## Features
 
-- 🚀 **NextJS 16** - Latest version with App Router and Server Actions
-- 🔐 **Better Auth** - Modern authentication solution with email/password and session management
-- 🗄️ **PostgreSQL** - Reliable relational database
-- 🔄 **Drizzle ORM** - Type-safe database queries
-- 🏗️ **DDD Architecture** - Clean separation of concerns with Repository, Use Case, and API layers
-- 🗑️ **Soft Delete** - Default soft-delete implementation across all entities
-- 🐳 **Docker** - Development and production containers
-- 🧪 **Vitest Testing** - Fast unit, component, and integration tests with Vitest and Testing Library
-- 🔄 **CI/CD** - GitHub Actions for automated testing and builds
-- 💅 **ESLint & Prettier** - Code quality and formatting
-- 📝 **TypeScript** - Full type safety
-- 🎨 **Landing Page** - Professional landing page showcasing the template
-- 🔒 **Auth Pages** - Ready-to-use sign-up, sign-in, and dashboard pages
+### 📖 Bible Reading
+- **66 Books** - Complete Protestant canon
+- **Multiple Translations** - WEB, KJV, BSB, LSV, NET, ASV
+- **Smart Navigation** - Chapter-by-chapter navigation with Previous/Next buttons
+- **Verse Selection** - Select specific verses or ranges
+- **Beautiful Typography** - Elegant serif fonts optimized for reading scripture
+
+### 🤖 AI-Powered Features
+- **Insights Generation** - AI-generated analysis with three categories:
+  - Historical Context
+  - Theological Significance  
+  - Practical Application
+- **Chat Interface** - Ask questions about passages and get AI responses
+- **Insight History** - Browse and favorite past insights
+- **Chat History** - Review previous conversations
+
+### 🎨 Design & UX
+- **Beautiful Theming** - Warm parchment-inspired design with burgundy and gold accents
+- **Dark Mode** - Full dark mode support with warm brown tones
+- **Responsive** - Mobile-first design that works on all devices
+- **Accessible** - WCAG compliant with semantic HTML and ARIA attributes
+
+### 🏗️ Technical Features
+- 🚀 **NextJS 16** - App Router and Server Components
+- 🔐 **Better Auth** - User authentication with session management
+- 🗄️ **PostgreSQL** - Relational database with Drizzle ORM
+- 🤖 **Claude AI** - Anthropic Claude Sonnet 4 for insights and chat
+- 🧪 **Vitest** - Comprehensive testing with Testing Library
+- 📝 **TypeScript** - Full type safety throughout
+- 🎨 **Tailwind CSS v4** - Modern styling with custom theme
+- 🔄 **CI/CD** - Automated testing and builds
 
 ## Quick Start
-
-📖 **See the [Quick Start Guide](./docs/quick-start.md) for detailed step-by-step instructions.**
-
-### TL;DR
 
 ```bash
 # 1. Install dependencies
@@ -30,45 +44,52 @@ npm install
 
 # 2. Set up environment
 cp .env.example .env.local
+# Edit .env.local and add:
+# - ANTHROPIC_API_KEY (get from https://console.anthropic.com)
+# - BETTER_AUTH_SECRET (any random 32+ character string)
 
 # 3. Start PostgreSQL
 docker-compose up postgres -d
 
-# 4. Push schema to database:
+# 4. Push schema to database
 npm run db:push
 
-# 5. Start development
+# 5. Start development server
 npm run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000) to see your app!
+Visit [http://localhost:3000/reader](http://localhost:3000/reader) to start reading!
 
-## What's Included
+### First Steps
+1. Navigate to `/reader` to access the Bible reader
+2. Select a book, chapter, and translation
+3. Click "Search" to load the passage
+4. Select text to generate AI insights or start a chat
 
-### Landing Page
+## Application Structure
 
-A professional landing page at `/` that showcases:
-- Hero section highlighting the template features
-- Feature cards for Next.js 16, Better Auth, PostgreSQL, DDD Architecture, Vitest, and Docker
-- Use case examples (SaaS, Internal Tools, APIs, E-commerce)
-- Clear call-to-action buttons
-
-### Authentication Flow
-
-Complete authentication system powered by Better Auth:
-
-- **Sign Up** (`/signup`) - User registration with name, email, and password
-- **Sign In** (`/signin`) - User authentication
-- **Dashboard** (`/dashboard`) - Protected page showing user profile
-- Session management and automatic redirects
+### Pages
+- **`/reader`** - Main Bible reading interface with sidebar
+- **`/history/insights`** - Browse and manage saved insights
+- **`/history/chats`** - View chat conversation history
+- **`/settings`** - User preferences (translation, font size, theme)
+- **`/signin`** & `/signup` - Authentication pages
 
 ### Architecture
 
-The template demonstrates Domain-Driven Design with:
-- **Domain Layer** - Business types and validation
-- **Use Cases** - Application logic (create, read, update user)
-- **Repositories** - Data access with soft-delete support
-- **API Routes** - RESTful endpoints and auth handlers
+Clean Domain-Driven Design:
+- **Domain Layer** (`src/domain/`) - Bible types and validation schemas
+- **Services** (`src/lib/services/`) - Bible API, AI, Insights, and Chat services
+- **Infrastructure** (`src/infrastructure/`) - Database, repositories, and ORM
+- **Components** (`src/components/`) - Reusable UI components organized by feature
+- **API Routes** (`src/app/api/`) - RESTful endpoints for Bible, insights, and chats
+
+### Key Components
+- **BibleReader** - Main passage display with verse selection
+- **PassageSearch** - Book, chapter, and translation selector
+- **InsightsModal** - AI-generated insights with tabbed interface
+- **ChatInterface** - Real-time chat with AI about passages
+- **ThemeToggle** - Light/dark mode switcher
 
 ## Project Structure
 
