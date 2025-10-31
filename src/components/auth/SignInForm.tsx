@@ -38,6 +38,21 @@ export function SignInForm() {
     }
   };
 
+  const handlePasskeySignIn = async () => {
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      await authClient.signIn.passkey();
+      
+      // Redirect to dashboard on success
+      router.push('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to sign in with passkey');
+      setIsLoading(false);
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -97,6 +112,40 @@ export function SignInForm() {
         className="w-full px-4 py-2 text-base font-medium bg-zinc-900 dark:bg-zinc-50 text-white dark:text-black rounded-lg hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? 'Signing in...' : 'Sign In'}
+      </button>
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-zinc-300 dark:border-zinc-700"></div>
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-2 bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400">
+            Or
+          </span>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={handlePasskeySignIn}
+        disabled={isLoading}
+        className="w-full px-4 py-2 text-base font-medium bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 border border-zinc-300 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+          />
+        </svg>
+        Sign in with Passkey
       </button>
     </form>
   );

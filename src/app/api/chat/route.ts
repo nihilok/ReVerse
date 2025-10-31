@@ -55,6 +55,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     const validatedData = createChatSchema.parse(body);
+    
+    // Check if we should prompt for passkey BEFORE creating the chat
+    const { shouldPromptForPasskey, createPasskeyPromptResponse } = await import('@/lib/auth/check-prompt-passkey');
+    const shouldPrompt = await shouldPromptForPasskey(
+      user.id,
+      user.isAnonymous ?? false,
+      'save_chat'
+    );
+    
     const result = await chatService.createChat({
       userId: user.id,
       firstMessage: validatedData.firstMessage,
@@ -63,7 +72,16 @@ export async function POST(request: NextRequest) {
       insightId: validatedData.insightId,
     });
 
-    return NextResponse.json(result, { status: 201 });
+    // Include passkey prompt in response if needed
+    const response: { data: typeof result; passkeyPrompt?: ReturnType<typeof createPasskeyPromptResponse> } = {
+      data: result,
+    };
+
+    if (shouldPrompt) {
+      response.passkeyPrompt = createPasskeyPromptResponse();
+    }
+
+    return NextResponse.json(response, { status: 201 });
   } catch (error) {
     if (error instanceof Error && error.message === 'Authentication required') {
       return NextResponse.json(

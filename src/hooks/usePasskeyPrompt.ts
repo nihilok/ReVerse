@@ -9,7 +9,7 @@ const PROMPT_TRIGGERS_KEY = 'passkey-prompt-triggers';
 interface PromptTriggers {
   firstChatSaved: boolean;
   firstInsightSaved: boolean;
-  firstPreferenceSaved: boolean;
+  firstSettingsSaved: boolean;
 }
 
 /**
@@ -69,7 +69,7 @@ export function usePasskeyPrompt() {
         : {
             firstChatSaved: false,
             firstInsightSaved: false,
-            firstPreferenceSaved: false,
+            firstSettingsSaved: false,
           };
 
       // If this trigger has already fired, don't prompt again
