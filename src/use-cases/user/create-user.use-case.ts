@@ -9,17 +9,20 @@ export class CreateUserUseCase {
     // Validate input
     const validatedData = CreateUserSchema.parse(input);
 
-    // Check if user already exists
-    const existingUser = await this.userRepository.findByEmail(validatedData.email);
-    if (existingUser) {
-      throw new Error('User with this email already exists');
+    // Check if user already exists (only if email is provided)
+    if (validatedData.email) {
+      const existingUser = await this.userRepository.findByEmail(validatedData.email);
+      if (existingUser) {
+        throw new Error('User with this email already exists');
+      }
     }
 
     // Create user
     const user = await this.userRepository.createUser({
-      email: validatedData.email,
+      email: validatedData.email || null,
       name: validatedData.name || null,
       image: validatedData.image || null,
+      isAnonymous: validatedData.isAnonymous || false,
     });
 
     return user;

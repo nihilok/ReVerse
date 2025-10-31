@@ -25,7 +25,7 @@ export function usePasskeyPrompt() {
     const checkAnonymousStatus = async () => {
       try {
         const session = await authClient.getSession();
-        setIsAnonymous(session?.user?.isAnonymous ?? false);
+        setIsAnonymous(session?.data?.user?.isAnonymous ?? false);
       } catch (error) {
         console.error('Failed to check anonymous status:', error);
       }
@@ -46,7 +46,7 @@ export function usePasskeyPrompt() {
     // Check if user is anonymous
     try {
       const session = await authClient.getSession();
-      if (!session?.user?.isAnonymous) {
+      if (!session?.data?.user?.isAnonymous) {
         return false;
       }
 
