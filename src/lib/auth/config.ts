@@ -19,6 +19,15 @@ if (process.env.NODE_ENV === 'production') {
 
 const baseURL = process.env.BETTER_AUTH_URL || 'http://localhost:3000';
 
+// Warn if PASSKEY_RP_ID is not set in production (at runtime)
+if (process.env.NODE_ENV === 'production' && !process.env.PASSKEY_RP_ID) {
+  console.warn(
+    'Warning: PASSKEY_RP_ID environment variable is not set in production. ' +
+    'Passkey authentication will use "localhost" which may cause issues. ' +
+    'Please set PASSKEY_RP_ID to your production domain (e.g., "example.com").'
+  );
+}
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
@@ -41,13 +50,7 @@ export const auth = betterAuth({
     // Enable passkey authentication
     passkey({
       rpID: process.env.NODE_ENV === 'production' 
-        ? (() => {
-            const rpId = process.env.PASSKEY_RP_ID;
-            if (!rpId) {
-              throw new Error('PASSKEY_RP_ID environment variable is required in production');
-            }
-            return rpId;
-          })()
+        ? (process.env.PASSKEY_RP_ID || 'localhost')
         : 'localhost',
       rpName: 'ReVerse - Bible Reading App',
       origin: process.env.NODE_ENV === 'production'
