@@ -57,13 +57,31 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     const validatedData = createInsightSchema.parse(body);
+    
+    // Check if we should prompt for passkey BEFORE creating the insight
+    const { shouldPromptForPasskey, createPasskeyPromptResponse } = await import('@/lib/auth/check-prompt-passkey');
+    const shouldPrompt = await shouldPromptForPasskey(
+      user.id,
+      user.isAnonymous ?? false,
+      'save_insight'
+    );
+    
     const insight = await insightsService.getOrCreateInsight({
       userId: user.id,
       passageText: validatedData.passageText,
       passageReference: validatedData.passageReference,
     });
 
-    return NextResponse.json(insight, { status: 201 });
+    // Include passkey prompt in response if needed
+    const response: { data: typeof insight; passkeyPrompt?: ReturnType<typeof createPasskeyPromptResponse> } = {
+      data: insight,
+    };
+
+    if (shouldPrompt) {
+      response.passkeyPrompt = createPasskeyPromptResponse();
+    }
+
+    return NextResponse.json(response, { status: 201 });
   } catch (error) {
     if (error instanceof Error && error.message === 'Authentication required') {
       return NextResponse.json(
