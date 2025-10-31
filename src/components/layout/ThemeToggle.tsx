@@ -5,19 +5,15 @@ import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark" | null>(null);
-
-  // Initialize theme after mount to avoid hydration mismatch
-  useEffect(() => {
-    // Get initial theme from localStorage or system preference
+  const [theme, setTheme] = useState<"light" | "dark" | null>(() => {
+    // Initialize from localStorage or system preference on client side only
+    if (typeof window === "undefined") return null;
+    
     const storedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
-    if (storedTheme) {
-      setTheme(storedTheme);
-    } else {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-      setTheme(systemTheme);
-    }
-  }, []);
+    if (storedTheme) return storedTheme;
+    
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
 
   // When theme changes, update DOM and localStorage
   useEffect(() => {

@@ -117,6 +117,18 @@ export default function ReaderPage() {
     console.log("Sending message:", message, "chatId:", currentChatId);
   };
 
+  const handleTextSelected = (text: string, reference: string) => {
+    // Handle text selection for insights
+    console.log("Text selected:", text, reference);
+    setShowInsightsModal(true);
+  };
+
+  const handleAskQuestion = (text: string, reference: string) => {
+    // Handle text selection for chat
+    console.log("Ask question:", text, reference);
+    setShowChatModal(true);
+  };
+
   return (
     <div className="flex flex-col h-screen">
       <AppHeader user={null} />
@@ -157,7 +169,12 @@ export default function ReaderPage() {
             />
           )}
 
-          <BibleReader passage={passage} isLoading={isLoading} />
+          <BibleReader 
+            passage={passage} 
+            isLoading={isLoading}
+            onTextSelected={handleTextSelected}
+            onAskQuestion={handleAskQuestion}
+          />
 
           {passage && (
             <ChapterNavigation
