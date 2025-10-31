@@ -171,7 +171,7 @@
   }
 }
 
-/* Dark mode theme */
+/* Dark mode theme - supports both class-based and media query */
 @media (prefers-color-scheme: dark) {
   @theme {
     --color-background: oklch(18% 0.02 30); /* Deep warm brown background */
@@ -187,6 +187,31 @@
     --color-muted: oklch(28% 0.015 35);
     --color-muted-foreground: oklch(70% 0.015 60);
     --color-accent: oklch(45% 0.08 50); /* Muted gold accent */
+    --color-accent-foreground: oklch(95% 0.01 75);
+    --color-destructive: oklch(60% 0.18 25);
+    --color-destructive-foreground: oklch(98% 0.01 75);
+    --color-border: oklch(32% 0.02 35);
+    --color-input: oklch(25% 0.015 35);
+    --color-ring: oklch(65% 0.15 25);
+  }
+}
+
+/* Class-based dark mode for manual toggle */
+.dark {
+  @theme {
+    --color-background: oklch(18% 0.02 30);
+    --color-foreground: oklch(95% 0.01 75);
+    --color-card: oklch(22% 0.02 30);
+    --color-card-foreground: oklch(95% 0.01 75);
+    --color-popover: oklch(22% 0.02 30);
+    --color-popover-foreground: oklch(95% 0.01 75);
+    --color-primary: oklch(65% 0.15 25);
+    --color-primary-foreground: oklch(98% 0.01 75);
+    --color-secondary: oklch(35% 0.03 50);
+    --color-secondary-foreground: oklch(95% 0.01 75);
+    --color-muted: oklch(28% 0.015 35);
+    --color-muted-foreground: oklch(70% 0.015 60);
+    --color-accent: oklch(45% 0.08 50);
     --color-accent-foreground: oklch(95% 0.01 75);
     --color-destructive: oklch(60% 0.18 25);
     --color-destructive-foreground: oklch(98% 0.01 75);
