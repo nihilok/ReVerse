@@ -24,7 +24,7 @@ describe('usePasskeyPrompt', () => {
   describe('Initial State', () => {
     it('should initialize with correct default values', async () => {
       vi.mocked(authClient.getSession).mockResolvedValue({
-        user: { id: '123', isAnonymous: true },
+        data: { user: { id: '123', isAnonymous: true } },
       } as never);
 
       const { result } = renderHook(() => usePasskeyPrompt());
@@ -38,7 +38,7 @@ describe('usePasskeyPrompt', () => {
 
     it('should detect authenticated users', async () => {
       vi.mocked(authClient.getSession).mockResolvedValue({
-        user: { id: '123', isAnonymous: false },
+        data: { user: { id: '123', isAnonymous: false } },
       } as never);
 
       const { result } = renderHook(() => usePasskeyPrompt());
@@ -62,7 +62,7 @@ describe('usePasskeyPrompt', () => {
   describe('Trigger Management', () => {
     it('should mark trigger and show prompt for anonymous users', async () => {
       vi.mocked(authClient.getSession).mockResolvedValue({
-        user: { id: '123', isAnonymous: true },
+        data: { user: { id: '123', isAnonymous: true } },
       } as never);
 
       const { result } = renderHook(() => usePasskeyPrompt());
@@ -78,7 +78,7 @@ describe('usePasskeyPrompt', () => {
 
     it('should not show prompt for authenticated users', async () => {
       vi.mocked(authClient.getSession).mockResolvedValue({
-        user: { id: '123', isAnonymous: false },
+        data: { user: { id: '123', isAnonymous: false } },
       } as never);
 
       const { result } = renderHook(() => usePasskeyPrompt());
@@ -96,7 +96,7 @@ describe('usePasskeyPrompt', () => {
       sessionStorage.setItem('passkey-prompt-dismissed', 'true');
 
       vi.mocked(authClient.getSession).mockResolvedValue({
-        user: { id: '123', isAnonymous: true },
+        data: { user: { id: '123', isAnonymous: true } },
       } as never);
 
       const { result } = renderHook(() => usePasskeyPrompt());
@@ -111,7 +111,7 @@ describe('usePasskeyPrompt', () => {
 
     it('should not trigger twice for same action', async () => {
       vi.mocked(authClient.getSession).mockResolvedValue({
-        user: { id: '123', isAnonymous: true },
+        data: { user: { id: '123', isAnonymous: true } },
       } as never);
 
       const { result } = renderHook(() => usePasskeyPrompt());
@@ -132,7 +132,7 @@ describe('usePasskeyPrompt', () => {
 
     it('should allow different triggers', async () => {
       vi.mocked(authClient.getSession).mockResolvedValue({
-        user: { id: '123', isAnonymous: true },
+        data: { user: { id: '123', isAnonymous: true } },
       } as never);
 
       const { result } = renderHook(() => usePasskeyPrompt());
@@ -159,7 +159,7 @@ describe('usePasskeyPrompt', () => {
   describe('Dismiss Functionality', () => {
     it('should dismiss prompt and set session storage', async () => {
       vi.mocked(authClient.getSession).mockResolvedValue({
-        user: { id: '123', isAnonymous: true },
+        data: { user: { id: '123', isAnonymous: true } },
       } as never);
 
       const { result } = renderHook(() => usePasskeyPrompt());
@@ -180,7 +180,7 @@ describe('usePasskeyPrompt', () => {
   describe('Reset Functionality', () => {
     it('should reset all prompt state', async () => {
       vi.mocked(authClient.getSession).mockResolvedValue({
-        user: { id: '123', isAnonymous: true },
+        data: { user: { id: '123', isAnonymous: true } },
       } as never);
 
       const { result } = renderHook(() => usePasskeyPrompt());
