@@ -9,7 +9,7 @@ ReVerse is a NextJS Full Stack Bible Reading Application with AI-powered insight
 - **Framework**: Next.js 16 with App Router
 - **Language**: TypeScript/JavaScript
 - **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: Better Auth for email/password authentication
+- **Authentication**: Better Auth with anonymous + passkey plugins for progressive authentication
 - **AI Integration**: Anthropic Claude AI (Sonnet 4.5) for insights and chat
 - **Bible API**: HelloAO Bible API for scripture content
 - **Styling**: Tailwind CSS v4 with custom parchment-inspired theme
@@ -100,6 +100,59 @@ ReVerse is a NextJS Full Stack Bible Reading Application with AI-powered insight
 - Handle chapter and verse range queries
 - Support multiple translations
 
+## Authentication Architecture
+
+### Anonymous-First Progressive Authentication
+ReVerse uses Better Auth's `anonymous` and `passkey` plugins to provide a frictionless user experience:
+
+1. **Anonymous Access**: Users can immediately use the app without registration
+   - Automatic anonymous user creation on first visit (via AuthProvider)
+   - Session persists via secure HTTP-only cookies
+   - All features available to anonymous users
+
+2. **Just-in-Time Passkey Prompts**: Users are optionally prompted to add a passkey when:
+   - Saving their first chat
+   - Creating their first insight
+   - Updating their first setting
+   - Prompt only shows once per session and can be dismissed
+
+3. **Passkey Authentication**: WebAuthn-based passwordless authentication
+   - Users can add passkeys to access data from other devices
+   - Multiple passkeys per user supported
+   - Passkey sign-in available on sign-in page
+
+4. **Data Migration**: When anonymous user adds a passkey:
+   - All chats, insights, and preferences automatically migrated
+   - Migration handled by `migrateAnonymousUserData` function
+   - Called via Better Auth's `onLinkAccount` callback
+
+### Authentication Implementation Details
+
+**Key Files:**
+- `/src/lib/auth/config.ts` - Better Auth configuration with plugins
+- `/src/lib/auth/client.ts` - Client-side auth client
+- `/src/lib/auth/migrate-anonymous-data.ts` - Data migration logic
+- `/src/lib/auth/check-prompt-passkey.ts` - Prompt trigger logic
+- `/src/components/auth/AuthProvider.tsx` - Anonymous sign-in initialization
+- `/src/components/auth/PasskeyPrompt.tsx` - Passkey prompt UI
+- `/src/hooks/usePasskeyPrompt.ts` - Prompt state management
+
+**Database Schema:**
+- `users.isAnonymous` - Boolean flag for anonymous users
+- `users.email` - Now optional (nullable) for anonymous users
+- `passkeys` table - Stores WebAuthn credentials
+
+**API Integration:**
+- Chat and insight endpoints check for prompt triggers
+- Response includes `passkeyPrompt` field when appropriate
+- Client-side code shows PasskeyPrompt component
+
+**Testing:**
+- 48 tests covering authentication workflow
+- Tests for usePasskeyPrompt hook
+- Tests for data migration
+- Tests for API prompt integration
+
 ## Copilot Usage Guidelines
 When assisting with this repository:
 - Respect the Next.js framework conventions
@@ -111,3 +164,5 @@ When assisting with this repository:
 - Keep AI prompts and Bible references consistent
 - Test with real Bible passages when possible
 - Respect user privacy and data segregation
+- Maintain anonymous-first authentication flow
+- Ensure passkey prompts are non-intrusive and dismissible
