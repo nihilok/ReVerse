@@ -41,7 +41,13 @@ export const auth = betterAuth({
     // Enable passkey authentication
     passkey({
       rpID: process.env.NODE_ENV === 'production' 
-        ? process.env.PASSKEY_RP_ID || 'reverse-app.com'
+        ? (() => {
+            const rpId = process.env.PASSKEY_RP_ID;
+            if (!rpId) {
+              throw new Error('PASSKEY_RP_ID environment variable is required in production');
+            }
+            return rpId;
+          })()
         : 'localhost',
       rpName: 'ReVerse - Bible Reading App',
       origin: process.env.NODE_ENV === 'production'
