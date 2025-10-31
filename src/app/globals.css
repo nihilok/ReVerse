@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* Default to light mode colors */
 @theme {
   /* Light mode colors - inspired by ancient manuscripts, parchment, and illuminated texts */
   /* Warm cream/parchment background with rich burgundy and gold accents */
