@@ -35,7 +35,7 @@ export const auth = betterAuth({
       emailDomainName: 'reverse-app.com',
       onLinkAccount: async ({ anonymousUser, newUser }) => {
         // Migrate data from anonymous user to authenticated user
-        await migrateAnonymousUserData(anonymousUser.id, newUser.id);
+        await migrateAnonymousUserData(anonymousUser.user.id, newUser.user.id);
       },
     }),
     // Enable passkey authentication
