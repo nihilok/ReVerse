@@ -48,7 +48,7 @@
     "@vitejs/plugin-react": "^5.1.0",
     "@vitest/ui": "^4.0.5",
     "better-sqlite3": "^12.4.1",
-    "drizzle-kit": "^0.29.1",
+    "drizzle-kit": "^0.31.6",
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
     "jsdom": "^27.0.1",
