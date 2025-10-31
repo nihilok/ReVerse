@@ -160,29 +160,31 @@ export default function ReaderPage() {
           }
         />
 
-        <main className="flex-1 overflow-y-auto p-6 space-y-6">
-          {passage && (
-            <ChapterNavigation
-              book={currentBook}
-              chapter={currentChapter}
-              onNavigate={handleNavigate}
-            />
-          )}
+        <main className="flex-1 overflow-y-auto p-6">
+          <div className="max-w-4xl mx-auto space-y-6">
+            {passage && (
+              <ChapterNavigation
+                book={currentBook}
+                chapter={currentChapter}
+                onNavigate={handleNavigate}
+              />
+            )}
 
-          <BibleReader 
-            passage={passage} 
-            isLoading={isLoading}
-            onTextSelected={handleTextSelected}
-            onAskQuestion={handleAskQuestion}
-          />
-
-          {passage && (
-            <ChapterNavigation
-              book={currentBook}
-              chapter={currentChapter}
-              onNavigate={handleNavigate}
+            <BibleReader
+              passage={passage}
+              isLoading={isLoading}
+              onTextSelected={handleTextSelected}
+              onAskQuestion={handleAskQuestion}
             />
-          )}
+
+            {passage && (
+              <ChapterNavigation
+                book={currentBook}
+                chapter={currentChapter}
+                onNavigate={handleNavigate}
+              />
+            )}
+          </div>
         </main>
       </div>
 

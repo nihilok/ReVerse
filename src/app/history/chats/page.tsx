@@ -116,7 +116,7 @@ export default function ChatsHistoryPage() {
       <AppHeader user={null} />
 
       <main className="flex-1 overflow-y-auto">
-        <div className="container max-w-4xl py-8">
+        <div className="container max-w-4xl mx-auto py-8 px-6">
           <h1 className="text-3xl font-bold mb-6">Chat History</h1>
 
           <ChatList

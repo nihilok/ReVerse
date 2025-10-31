@@ -30,7 +30,7 @@ export default function SettingsPage() {
       <AppHeader user={null} />
 
       <main className="flex-1 overflow-y-auto">
-        <div className="container max-w-2xl py-8">
+        <div className="container max-w-2xl mx-auto py-8 px-6">
           <h1 className="text-3xl font-bold mb-6">Settings</h1>
 
           <div className="space-y-6">
