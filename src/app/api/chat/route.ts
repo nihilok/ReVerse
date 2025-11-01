@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     // Check if we should prompt for passkey BEFORE creating the chat
     const shouldPrompt = await shouldPromptForPasskey(
       user.id,
-      user.isAnonymous ?? false,
+      user.isAnonymous,
       'save_chat'
     );
 
