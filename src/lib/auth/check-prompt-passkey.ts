@@ -61,6 +61,7 @@ export async function shouldPromptForPasskey(
       }
 
       default:
+        console.error(`shouldPromptForPasskey: Unknown actionType "${actionType}" received`);
         return false;
     }
   } catch (error) {
