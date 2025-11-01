@@ -57,19 +57,19 @@ describe('Preferences Workflow Integration Tests', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (requireAuth as any).mockResolvedValue(mockUser);
+    vi.mocked(requireAuth).mockResolvedValue(mockUser);
   });
 
   describe('GET /api/preferences', () => {
     it('should return existing preferences for authenticated user', async () => {
       // Mock database query to return preferences
-      (db.select as any).mockReturnValue({
+      vi.mocked(db.select).mockReturnValue({
         from: vi.fn().mockReturnValue({
           where: vi.fn().mockReturnValue({
             limit: vi.fn().mockResolvedValue([mockPreferences]),
           }),
         }),
-      });
+      } as never);
 
       const response = await GET();
       const data = await response.json();
@@ -83,13 +83,13 @@ describe('Preferences Workflow Integration Tests', () => {
 
     it('should return default preferences when none exist', async () => {
       // Mock database query to return empty array
-      (db.select as any).mockReturnValue({
+      vi.mocked(db.select).mockReturnValue({
         from: vi.fn().mockReturnValue({
           where: vi.fn().mockReturnValue({
             limit: vi.fn().mockResolvedValue([]),
           }),
         }),
-      });
+      } as never);
 
       const response = await GET();
       const data = await response.json();
@@ -97,7 +97,7 @@ describe('Preferences Workflow Integration Tests', () => {
       expect(response.status).toBe(200);
       expect(data).toEqual({
         defaultTranslation: 'WEB',
-        theme: 'light',
+        theme: 'system',
         fontSize: 'medium',
         showVerseNumbers: true,
         autoSavePassages: true,
@@ -105,7 +105,7 @@ describe('Preferences Workflow Integration Tests', () => {
     });
 
     it('should return 401 when not authenticated', async () => {
-      (requireAuth as any).mockRejectedValue(new Error('Authentication required'));
+      vi.mocked(requireAuth).mockRejectedValue(new Error('Authentication required'));
 
       const response = await GET();
       const data = await response.json();
@@ -124,20 +124,20 @@ describe('Preferences Workflow Integration Tests', () => {
       };
 
       // Mock database query to return empty array (no existing preferences)
-      (db.select as any).mockReturnValue({
+      vi.mocked(db.select).mockReturnValue({
         from: vi.fn().mockReturnValue({
           where: vi.fn().mockReturnValue({
             limit: vi.fn().mockResolvedValue([]),
           }),
         }),
-      });
+      } as never);
 
       // Mock insert
-      (db.insert as any).mockReturnValue({
+      vi.mocked(db.insert).mockReturnValue({
         values: vi.fn().mockReturnValue({
           returning: vi.fn().mockResolvedValue([{ ...mockPreferences, ...newPreferences }]),
         }),
-      });
+      } as never);
 
       const request = new NextRequest('http://localhost/api/preferences', {
         method: 'PUT',
@@ -160,22 +160,22 @@ describe('Preferences Workflow Integration Tests', () => {
       };
 
       // Mock database query to return existing preferences
-      (db.select as any).mockReturnValue({
+      vi.mocked(db.select).mockReturnValue({
         from: vi.fn().mockReturnValue({
           where: vi.fn().mockReturnValue({
             limit: vi.fn().mockResolvedValue([mockPreferences]),
           }),
         }),
-      });
+      } as never);
 
       // Mock update
-      (db.update as any).mockReturnValue({
+      vi.mocked(db.update).mockReturnValue({
         set: vi.fn().mockReturnValue({
           where: vi.fn().mockReturnValue({
             returning: vi.fn().mockResolvedValue([{ ...mockPreferences, ...updates }]),
           }),
         }),
-      });
+      } as never);
 
       const request = new NextRequest('http://localhost/api/preferences', {
         method: 'PUT',
@@ -221,7 +221,7 @@ describe('Preferences Workflow Integration Tests', () => {
     });
 
     it('should return 401 when not authenticated', async () => {
-      (requireAuth as any).mockRejectedValue(new Error('Authentication required'));
+      vi.mocked(requireAuth).mockRejectedValue(new Error('Authentication required'));
 
       const request = new NextRequest('http://localhost/api/preferences', {
         method: 'PUT',
