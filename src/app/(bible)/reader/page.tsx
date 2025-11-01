@@ -181,13 +181,16 @@ export default function ReaderPage() {
 
     setIsLoadingChat(true);
     try {
+      // Construct a question about the selected passage
+      const question = `What does this passage mean? "${text}"`;
+      
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstMessage: text,
+          firstMessage: question,
           passageText: text,
           passageReference: reference,
         }),
@@ -197,7 +200,7 @@ export default function ReaderPage() {
         const result = await response.json();
         setCurrentChatId(result.data.chat.id);
         setChatMessages([
-          { role: 'user', content: text },
+          { role: 'user', content: question },
           { role: 'assistant', content: result.data.response },
         ]);
         setShowChatModal(true);
