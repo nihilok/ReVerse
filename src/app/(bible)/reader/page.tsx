@@ -125,7 +125,7 @@ export default function ReaderPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ content: message }),
+        body: JSON.stringify({ message }),
       });
 
       if (response.ok) {
