@@ -17,8 +17,11 @@ function initializeAuth() {
 
   const secret = process.env.BETTER_AUTH_SECRET || 'development-secret-key-min-32-chars-long-please-change';
 
-  // Validate secret in production
-  if (process.env.NODE_ENV === 'production') {
+  // Validate secret in production (but not during build phase)
+  // The CI env var is commonly set during CI/CD builds, and NEXT_PHASE is set by Next.js
+  const isBuildTime = process.env.CI === 'true' || process.env.NEXT_PHASE === 'phase-production-build';
+
+  if (process.env.NODE_ENV === 'production' && !isBuildTime) {
     if (!process.env.BETTER_AUTH_SECRET) {
       throw new Error('BETTER_AUTH_SECRET environment variable is required in production');
     }
@@ -29,8 +32,8 @@ function initializeAuth() {
 
   const baseURL = process.env.BETTER_AUTH_URL || 'http://localhost:3000';
 
-  // Warn if PASSKEY_RP_ID is not set in production (at runtime)
-  if (process.env.NODE_ENV === 'production' && !process.env.PASSKEY_RP_ID) {
+  // Warn if PASSKEY_RP_ID is not set in production (at runtime, not during build)
+  if (process.env.NODE_ENV === 'production' && !isBuildTime && !process.env.PASSKEY_RP_ID) {
     console.warn(
       'Warning: PASSKEY_RP_ID environment variable is not set in production. ' +
       'Passkey authentication will use "localhost" which may cause issues. ' +
@@ -103,10 +106,12 @@ function initializeAuth() {
         rpID: process.env.NODE_ENV === 'production'
           ? (() => {
               const rpId = process.env.PASSKEY_RP_ID;
-              if (!rpId) {
+              // Allow build-time execution without throwing
+              if (!rpId && !isBuildTime) {
                 throw new Error('PASSKEY_RP_ID environment variable is required in production');
               }
-              return rpId;
+              // Use localhost as fallback during build (will be overridden at runtime)
+              return rpId || 'localhost';
             })()
           : 'localhost',
         rpName: 'ReVerse - Bible Reading App',
