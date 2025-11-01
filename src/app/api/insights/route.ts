@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     // Check if we should prompt for passkey BEFORE creating the insight
     const shouldPrompt = await shouldPromptForPasskey(
       user.id,
-      user.isAnonymous ?? false,
+      user.isAnonymous,
       'save_insight'
     );
 
