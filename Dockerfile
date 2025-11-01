@@ -8,6 +8,15 @@ FROM base AS deps
 COPY package.json package-lock.json ./
 RUN npm ci
 
+# Migration runner stage
+FROM base AS migration-runner
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json package-lock.json ./
+COPY drizzle.config.ts ./
+COPY src/infrastructure/database ./src/infrastructure/database
+
+CMD ["npm", "run", "db:migrate"]
+
 # Builder stage
 FROM base AS builder
 
