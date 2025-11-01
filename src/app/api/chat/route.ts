@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { chatService } from '@/lib/services/chat-service';
 import { requireAuth } from '@/lib/auth/server';
 import { z } from 'zod';
+import { shouldPromptForPasskey, createPasskeyPromptResponse } from '@/lib/auth/check-prompt-passkey';
 
 const createChatSchema = z.object({
   firstMessage: z.string(),
@@ -57,7 +58,6 @@ export async function POST(request: NextRequest) {
     const validatedData = createChatSchema.parse(body);
     
     // Check if we should prompt for passkey BEFORE creating the chat
-    const { shouldPromptForPasskey, createPasskeyPromptResponse } = await import('@/lib/auth/check-prompt-passkey');
     const shouldPrompt = await shouldPromptForPasskey(
       user.id,
       user.isAnonymous ?? false,

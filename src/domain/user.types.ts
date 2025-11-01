@@ -5,7 +5,19 @@ export const CreateUserSchema = z.object({
   name: z.string().min(1, 'Name is required').optional(),
   image: z.string().url('Invalid image URL').optional(),
   isAnonymous: z.boolean().optional(),
-});
+}).refine(
+  (data) => {
+    // If email is not provided, isAnonymous must be true
+    if (!data.email && !data.isAnonymous) {
+      return false;
+    }
+    // If email is provided, validate it's properly formatted (already done by zod)
+    return true;
+  },
+  {
+    message: 'User must have an email or be marked as anonymous',
+  }
+);
 
 export const UpdateUserSchema = z.object({
   name: z.string().min(1, 'Name is required').optional(),
