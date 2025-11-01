@@ -29,6 +29,22 @@ if (process.env.NODE_ENV === 'production' && !process.env.PASSKEY_RP_ID) {
   );
 }
 
+// Build trusted origins list - include both frontend and backend URLs
+const trustedOrigins = [baseURL];
+if (process.env.NEXT_PUBLIC_BETTER_AUTH_URL && process.env.NEXT_PUBLIC_BETTER_AUTH_URL !== baseURL) {
+  trustedOrigins.push(process.env.NEXT_PUBLIC_BETTER_AUTH_URL);
+}
+// Add production URL variations if in production
+if (process.env.NODE_ENV === 'production') {
+  const prodUrl = new URL(baseURL);
+  // Add both with and without www
+  if (prodUrl.hostname.startsWith('www.')) {
+    trustedOrigins.push(`${prodUrl.protocol}//${prodUrl.hostname.replace('www.', '')}`);
+  } else {
+    trustedOrigins.push(`${prodUrl.protocol}//www.${prodUrl.hostname}`);
+  }
+}
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     schema: schema,
@@ -39,7 +55,7 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: true,
   },
-  trustedOrigins: [baseURL],
+  trustedOrigins,
   secret,
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
@@ -52,6 +68,13 @@ export const auth = betterAuth({
   advanced: {
     // Ensure cookies work properly in all environments
     useSecureCookies: process.env.NODE_ENV === 'production',
+    // Trust proxy headers (CRITICAL for reverse proxy setups with SSL termination)
+    // This tells Better Auth to respect X-Forwarded-Proto, X-Forwarded-Host, etc.
+    // Required when Nginx/Apache handles SSL and forwards to Next.js over HTTP
+    trustProxy: process.env.NODE_ENV === 'production',
+    crossSubDomainCookies: {
+      enabled: process.env.NODE_ENV === 'production',
+    },
     database: {
       // Let PostgreSQL generate UUIDs via defaultRandom()
       generateId: false,
