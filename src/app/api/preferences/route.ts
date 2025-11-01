@@ -28,7 +28,7 @@ export async function GET() {
       // Return default preferences if none exist
       return NextResponse.json({
         defaultTranslation: 'WEB',
-        theme: 'light',
+        theme: 'system',
         fontSize: 'medium',
         showVerseNumbers: true,
         autoSavePassages: true,
