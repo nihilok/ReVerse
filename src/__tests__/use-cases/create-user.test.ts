@@ -8,8 +8,8 @@ describe('CreateUserUseCase', () => {
 
   beforeEach(() => {
     mockUserRepository = {
-      findByEmail: vi.fn() as any,
-      createUser: vi.fn() as any,
+      findByEmail: vi.fn(),
+      createUser: vi.fn(),
     } as unknown as UserRepository;
 
     createUserUseCase = new CreateUserUseCase(mockUserRepository);
@@ -33,8 +33,8 @@ describe('CreateUserUseCase', () => {
       deletedAt: null,
     };
 
-    (mockUserRepository.findByEmail as any).mockResolvedValue(null);
-    (mockUserRepository.createUser as any).mockResolvedValue(expectedUser);
+    vi.mocked(mockUserRepository.findByEmail).mockResolvedValue(null);
+    vi.mocked(mockUserRepository.createUser).mockResolvedValue(expectedUser);
 
     const result = await createUserUseCase.execute(input);
 
@@ -61,7 +61,7 @@ describe('CreateUserUseCase', () => {
       deletedAt: null,
     };
 
-    (mockUserRepository.findByEmail as any).mockResolvedValue(existingUser);
+    vi.mocked(mockUserRepository.findByEmail).mockResolvedValue(existingUser);
 
     await expect(createUserUseCase.execute(input)).rejects.toThrow(
       'User with this email already exists'
