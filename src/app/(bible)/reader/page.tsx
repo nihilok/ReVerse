@@ -142,8 +142,13 @@ export default function ReaderPage() {
             { role: 'user', content: message },
             { role: 'assistant', content: result.data.response },
           ]);
+        } else if (response.status === 401) {
+          console.error('Authentication required. Please refresh the page.');
+          alert('Session expired. Please refresh the page to continue.');
         } else {
-          console.error('Failed to create chat:', await response.text());
+          const errorText = await response.text();
+          console.error('Failed to create chat:', errorText);
+          alert('Failed to create chat. Please try again.');
         }
       } else {
         // Existing chat - send message
@@ -162,12 +167,18 @@ export default function ReaderPage() {
             { role: 'user', content: message },
             { role: 'assistant', content: result.response },
           ]);
+        } else if (response.status === 401) {
+          console.error('Authentication required. Please refresh the page.');
+          alert('Session expired. Please refresh the page to continue.');
         } else {
-          console.error('Failed to send message:', await response.text());
+          const errorText = await response.text();
+          console.error('Failed to send message:', errorText);
+          alert('Failed to send message. Please try again.');
         }
       }
     } catch (error) {
       console.error('Error sending message:', error);
+      alert('An error occurred. Please try again.');
     } finally {
       setIsSendingMessage(false);
     }
@@ -193,11 +204,17 @@ export default function ReaderPage() {
         const result = await response.json();
         setCurrentInsight(result.data);
         setShowInsightsModal(true);
+      } else if (response.status === 401) {
+        console.error('Authentication required. Please refresh the page.');
+        alert('Session expired. Please refresh the page to continue.');
       } else {
-        console.error('Failed to fetch insight:', await response.text());
+        const errorText = await response.text();
+        console.error('Failed to fetch insight:', errorText);
+        alert('Failed to fetch insight. Please try again.');
       }
     } catch (error) {
       console.error('Error fetching insight:', error);
+      alert('An error occurred. Please try again.');
     } finally {
       setIsLoadingInsight(false);
     }
