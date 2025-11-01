@@ -1,6 +1,6 @@
-# Docker Setup
+# Docker Setup & Deployment
 
-This document explains how to use Docker with this application for both development and production environments.
+This document explains how to deploy ReVerse using Docker for both development and production environments.
 
 ## Overview
 
@@ -8,7 +8,83 @@ The project includes:
 
 - `Dockerfile` - Multi-stage build for production
 - `docker-compose.yml` - Orchestration for services
-- PostgreSQL container for database
+- `scripts/deploy.sh` - Automated deployment script
+- `.env.production.example` - Environment variable template
+
+## Quick Deployment
+
+### Using the Deployment Script (Recommended)
+
+The easiest way to deploy:
+
+```bash
+./scripts/deploy.sh -d reverse.jarv.dev -k sk-ant-your-api-key
+```
+
+This automated script will:
+1. ✅ Generate a secure authentication secret (32+ characters)
+2. ✅ Create `.env.production` with all configuration
+3. ✅ Build Docker images
+4. ✅ Start PostgreSQL database and wait for it to be ready
+5. ✅ Run database migrations
+6. ✅ Start the application
+7. ✅ Verify deployment is successful
+
+**Example with custom PostgreSQL settings:**
+
+```bash
+./scripts/deploy.sh \
+  --domain myapp.com \
+  --api-key sk-ant-xxx \
+  --db-user mydbuser \
+  --db-password securepass123 \
+  --db-name mydb
+```
+
+**Example with custom port:**
+
+```bash
+./scripts/deploy.sh \
+  --domain myapp.com \
+  --port 3001 \
+  --api-key sk-ant-xxx
+```
+
+**Example with external database:**
+
+```bash
+./scripts/deploy.sh \
+  --domain myapp.com \
+  --api-key sk-ant-xxx \
+  --db-url postgresql://user:pass@external-db.com:5432/mydb
+```
+
+**Deployment Options:**
+
+| Option | Description | Default | Required |
+|--------|-------------|---------|----------|
+| `-d, --domain` | Your domain name | - | ✅ Yes |
+| `-k, --api-key` | Anthropic API key | - | ✅ Yes |
+| `-p, --port` | NextJS application port | 3000 | No |
+| `-s, --secret` | Better Auth secret | Auto-generated | No |
+| `--db-user` | PostgreSQL user | postgres | No |
+| `--db-password` | PostgreSQL password | postgres | No |
+| `--db-name` | Database name | appdb | No |
+| `--db-host` | Database host | postgres | No |
+| `--db-port` | Database port | 5432 | No |
+| `--db-url` | Full database URL | Auto-built | No |
+| `--no-build` | Skip building images | false | No |
+| `--no-migrate` | Skip migrations | false | No |
+
+**Quick Updates (Skip Rebuild):**
+
+When you only change environment variables and don't need to rebuild:
+
+```bash
+./scripts/deploy.sh -d myapp.com -k sk-ant-xxx --no-build
+```
+
+Run `./scripts/deploy.sh --help` for complete documentation
 
 ## Docker Compose Services
 
