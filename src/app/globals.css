@@ -197,6 +197,30 @@
   }
 }
 
+/* Class-based light mode for manual toggle - use raw CSS custom properties */
+.light {
+  color-scheme: light;
+  --color-background: oklch(97% 0.015 75);
+  --color-foreground: oklch(25% 0.02 30);
+  --color-card: oklch(99% 0.01 75);
+  --color-card-foreground: oklch(25% 0.02 30);
+  --color-popover: oklch(99% 0.01 75);
+  --color-popover-foreground: oklch(25% 0.02 30);
+  --color-primary: oklch(42% 0.15 25);
+  --color-primary-foreground: oklch(98% 0.01 75);
+  --color-secondary: oklch(88% 0.03 50);
+  --color-secondary-foreground: oklch(25% 0.02 30);
+  --color-muted: oklch(92% 0.015 65);
+  --color-muted-foreground: oklch(48% 0.015 40);
+  --color-accent: oklch(85% 0.08 50);
+  --color-accent-foreground: oklch(25% 0.02 30);
+  --color-destructive: oklch(55% 0.18 25);
+  --color-destructive-foreground: oklch(98% 0.01 75);
+  --color-border: oklch(88% 0.02 60);
+  --color-input: oklch(95% 0.015 70);
+  --color-ring: oklch(42% 0.15 25);
+}
+
 /* Class-based dark mode for manual toggle - use raw CSS custom properties */
 .dark {
   color-scheme: dark;
