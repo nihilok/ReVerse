@@ -21,7 +21,8 @@ export default function ReaderPage() {
 
   // Insights state
   const [showInsightsModal, setShowInsightsModal] = useState(false);
-  const [currentInsight] = useState<InsightData | null>(null);
+  const [currentInsight, setCurrentInsight] = useState<InsightData | null>(null);
+  const [isLoadingInsight, setIsLoadingInsight] = useState(false);
   const [insights] = useState<Array<{
     id: string;
     passageReference: string;
@@ -33,7 +34,9 @@ export default function ReaderPage() {
   // Chat state
   const [showChatModal, setShowChatModal] = useState(false);
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
-  const [chatMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([]);
+  const [chatMessages, setChatMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([]);
+  const [isLoadingChat, setIsLoadingChat] = useState(false);
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [chats] = useState<Array<{
     id: string;
     title: string;
@@ -113,20 +116,99 @@ export default function ReaderPage() {
   };
 
   const handleSendMessage = async (message: string) => {
-    // Message sending - will be implemented when chat is properly loaded
-    console.log("Sending message:", message, "chatId:", currentChatId);
+    if (!currentChatId || isSendingMessage) return;
+
+    setIsSendingMessage(true);
+    try {
+      const response = await fetch(`/api/chat/${currentChatId}/message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: message }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        // Add both user and assistant messages
+        setChatMessages((prev) => [
+          ...prev,
+          { role: 'user', content: message },
+          { role: 'assistant', content: result.response },
+        ]);
+      } else {
+        console.error('Failed to send message:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    } finally {
+      setIsSendingMessage(false);
+    }
   };
 
-  const handleTextSelected = (text: string, reference: string) => {
-    // Handle text selection for insights
-    console.log("Text selected:", text, reference);
-    setShowInsightsModal(true);
+  const handleTextSelected = async (text: string, reference: string) => {
+    if (!passage || isLoadingInsight) return;
+
+    setIsLoadingInsight(true);
+    try {
+      const response = await fetch('/api/insights', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          passageText: text,
+          passageReference: reference,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setCurrentInsight(result.data);
+        setShowInsightsModal(true);
+      } else {
+        console.error('Failed to fetch insight:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error fetching insight:', error);
+    } finally {
+      setIsLoadingInsight(false);
+    }
   };
 
-  const handleAskQuestion = (text: string, reference: string) => {
-    // Handle text selection for chat
-    console.log("Ask question:", text, reference);
-    setShowChatModal(true);
+  const handleAskQuestion = async (text: string, reference: string) => {
+    if (!passage || isLoadingChat) return;
+
+    setIsLoadingChat(true);
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstMessage: text,
+          passageText: text,
+          passageReference: reference,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setCurrentChatId(result.data.chat.id);
+        setChatMessages([
+          { role: 'user', content: text },
+          { role: 'assistant', content: result.data.response },
+        ]);
+        setShowChatModal(true);
+      } else {
+        console.error('Failed to create chat:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error creating chat:', error);
+    } finally {
+      setIsLoadingChat(false);
+    }
   };
 
   return (
