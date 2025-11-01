@@ -117,12 +117,14 @@ function initializeAuth() {
 }
 
 // Export a proxy that lazily initializes auth on first access
+let isInitialized = false;
 export const auth = new Proxy({} as ReturnType<typeof betterAuth>, {
   get(target, prop) {
     // On first access, initialize and copy all properties to the target
-    if (Object.keys(target).length === 0) {
+    if (!isInitialized) {
       const instance = initializeAuth();
       Object.assign(target, instance);
+      isInitialized = true;
     }
     return target[prop as keyof typeof target];
   },
