@@ -22,11 +22,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: builder
+      target: migration-runner
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/appdb
       NODE_ENV: production
-    command: npm run db:migrate
     depends_on:
       postgres:
         condition: service_healthy
