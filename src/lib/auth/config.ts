@@ -103,7 +103,7 @@ function initializeAuth() {
       // Enable passkey authentication
       passkey({
         rpID: process.env.NODE_ENV === 'production'
-          ? (process.env.PASSKEY_RP_ID || 'localhost') // Fallback for build time
+          ? process.env.PASSKEY_RP_ID
           : 'localhost',
         rpName: 'ReVerse - Bible Reading App',
         origin: process.env.NODE_ENV === 'production'
