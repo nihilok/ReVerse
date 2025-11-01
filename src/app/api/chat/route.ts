@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { chatService } from '@/lib/services/chat-service';
-import { requireAuth } from '@/lib/auth/server';
+import { requireAuth, requireFullAuth } from '@/lib/auth/server';
 import { z } from 'zod';
 import { shouldPromptForPasskey, createPasskeyPromptResponse } from '@/lib/auth/check-prompt-passkey';
 
@@ -52,7 +52,8 @@ export async function GET(request: NextRequest) {
 // POST /api/chat - Create new chat
 export async function POST(request: NextRequest) {
   try {
-    const user = await requireAuth();
+    // Use requireFullAuth to get isAnonymous field for passkey prompt check
+    const user = await requireFullAuth();
     const body = await request.json();
     const validatedData = createChatSchema.parse(body);
 

@@ -32,11 +32,10 @@ function initializeAuth() {
 
   const baseURL = process.env.BETTER_AUTH_URL || 'http://localhost:3000';
 
-  // Warn if PASSKEY_RP_ID is not set in production (at runtime, not during build)
+  // Validate PASSKEY_RP_ID in production (at runtime, not during build)
   if (process.env.NODE_ENV === 'production' && !isBuildTime && !process.env.PASSKEY_RP_ID) {
-    console.warn(
-      'Warning: PASSKEY_RP_ID environment variable is not set in production. ' +
-      'Passkey authentication will use "localhost" which may cause issues. ' +
+    throw new Error(
+      'PASSKEY_RP_ID environment variable is required in production. ' +
       'Please set PASSKEY_RP_ID to your production domain (e.g., "example.com").'
     );
   }
@@ -104,15 +103,7 @@ function initializeAuth() {
       // Enable passkey authentication
       passkey({
         rpID: process.env.NODE_ENV === 'production'
-          ? (() => {
-              const rpId = process.env.PASSKEY_RP_ID;
-              // Allow build-time execution without throwing
-              if (!rpId && !isBuildTime) {
-                throw new Error('PASSKEY_RP_ID environment variable is required in production');
-              }
-              // Use localhost as fallback during build (will be overridden at runtime)
-              return rpId || 'localhost';
-            })()
+          ? (process.env.PASSKEY_RP_ID || 'localhost') // Fallback for build time
           : 'localhost',
         rpName: 'ReVerse - Bible Reading App',
         origin: process.env.NODE_ENV === 'production'
@@ -127,9 +118,13 @@ function initializeAuth() {
 
 // Export a proxy that lazily initializes auth on first access
 export const auth = new Proxy({} as ReturnType<typeof betterAuth>, {
-  get(_target, prop) {
-    const instance = initializeAuth();
-    return instance[prop as keyof typeof instance];
+  get(target, prop) {
+    // On first access, initialize and copy all properties to the target
+    if (Object.keys(target).length === 0) {
+      const instance = initializeAuth();
+      Object.assign(target, instance);
+    }
+    return target[prop as keyof typeof target];
   },
 });
 
