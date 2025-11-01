@@ -116,7 +116,7 @@ The session should persist for 7 days and auto-refresh daily during use.
 **Error:** `Could not connect to database`
 
 **Solution:**
-- Ensure PostgreSQL is running: `docker-compose up postgres`
+- Ensure PostgreSQL is running: `docker compose up postgres`
 - Check DATABASE_URL is correct in your `.env` file
 - For Docker containers, use service name: `postgresql://postgres:postgres@postgres:5432/appdb`
 - For local development, use localhost: `postgresql://postgres:postgres@localhost:5432/appdb`
