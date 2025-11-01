@@ -1,7 +1,19 @@
 @import "tailwindcss";
 
-/* Default to light mode colors */
+/* Typography and border radius - set at theme level */
 @theme {
+  /* Typography - elegant serif fonts for biblical content */
+  --font-sans: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
+  /* Border radius - slightly more refined */
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.25rem;
+}
+
+/* Default to light mode colors using CSS custom properties */
+:root {
   /* Light mode colors - inspired by ancient manuscripts, parchment, and illuminated texts */
   /* Warm cream/parchment background with rich burgundy and gold accents */
   --color-background: oklch(97% 0.015 75); /* Warm cream, like aged parchment */
@@ -23,15 +35,6 @@
   --color-border: oklch(88% 0.02 60); /* Subtle warm border */
   --color-input: oklch(95% 0.015 70);
   --color-ring: oklch(42% 0.15 25); /* Burgundy focus ring */
-
-  /* Typography - elegant serif fonts for biblical content */
-  --font-sans: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-
-  /* Border radius - slightly more refined */
-  --radius-lg: 0.75rem;
-  --radius-md: 0.5rem;
-  --radius-sm: 0.25rem;
 }
 
 /* Base styles */
@@ -174,7 +177,7 @@
 
 /* Dark mode theme - supports both class-based and media query */
 @media (prefers-color-scheme: dark) {
-  @theme {
+  :root:not(.light) {
     --color-background: oklch(18% 0.02 30); /* Deep warm brown background */
     --color-foreground: oklch(95% 0.01 75); /* Warm cream text */
     --color-card: oklch(22% 0.02 30); /* Slightly lighter for cards */
@@ -199,25 +202,23 @@
 
 /* Class-based dark mode for manual toggle */
 .dark {
-  @theme {
-    --color-background: oklch(18% 0.02 30);
-    --color-foreground: oklch(95% 0.01 75);
-    --color-card: oklch(22% 0.02 30);
-    --color-card-foreground: oklch(95% 0.01 75);
-    --color-popover: oklch(22% 0.02 30);
-    --color-popover-foreground: oklch(95% 0.01 75);
-    --color-primary: oklch(65% 0.15 25);
-    --color-primary-foreground: oklch(98% 0.01 75);
-    --color-secondary: oklch(35% 0.03 50);
-    --color-secondary-foreground: oklch(95% 0.01 75);
-    --color-muted: oklch(28% 0.015 35);
-    --color-muted-foreground: oklch(70% 0.015 60);
-    --color-accent: oklch(45% 0.08 50);
-    --color-accent-foreground: oklch(95% 0.01 75);
-    --color-destructive: oklch(60% 0.18 25);
-    --color-destructive-foreground: oklch(98% 0.01 75);
-    --color-border: oklch(32% 0.02 35);
-    --color-input: oklch(25% 0.015 35);
-    --color-ring: oklch(65% 0.15 25);
-  }
+  --color-background: oklch(18% 0.02 30);
+  --color-foreground: oklch(95% 0.01 75);
+  --color-card: oklch(22% 0.02 30);
+  --color-card-foreground: oklch(95% 0.01 75);
+  --color-popover: oklch(22% 0.02 30);
+  --color-popover-foreground: oklch(95% 0.01 75);
+  --color-primary: oklch(65% 0.15 25);
+  --color-primary-foreground: oklch(98% 0.01 75);
+  --color-secondary: oklch(35% 0.03 50);
+  --color-secondary-foreground: oklch(95% 0.01 75);
+  --color-muted: oklch(28% 0.015 35);
+  --color-muted-foreground: oklch(70% 0.015 60);
+  --color-accent: oklch(45% 0.08 50);
+  --color-accent-foreground: oklch(95% 0.01 75);
+  --color-destructive: oklch(60% 0.18 25);
+  --color-destructive-foreground: oklch(98% 0.01 75);
+  --color-border: oklch(32% 0.02 35);
+  --color-input: oklch(25% 0.015 35);
+  --color-ring: oklch(65% 0.15 25);
 }
