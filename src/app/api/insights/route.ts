@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { insightsService } from '@/lib/services/insights-service';
 import { requireAuth } from '@/lib/auth/server';
 import { z } from 'zod';
+import { shouldPromptForPasskey, createPasskeyPromptResponse } from '@/lib/auth/check-prompt-passkey';
 
 const createInsightSchema = z.object({
   passageText: z.string(),
@@ -59,7 +60,6 @@ export async function POST(request: NextRequest) {
     const validatedData = createInsightSchema.parse(body);
     
     // Check if we should prompt for passkey BEFORE creating the insight
-    const { shouldPromptForPasskey, createPasskeyPromptResponse } = await import('@/lib/auth/check-prompt-passkey');
     const shouldPrompt = await shouldPromptForPasskey(
       user.id,
       user.isAnonymous ?? false,

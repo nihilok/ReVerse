@@ -37,11 +37,24 @@ export function PasskeyPrompt({ onDismiss, onSuccess }: PasskeyPromptProps) {
       onDismiss();
     } catch (err) {
       console.error('Failed to add passkey:', err);
-      setError(
-        err instanceof Error 
-          ? err.message 
-          : 'Failed to add passkey. Please try again.'
-      );
+      
+      // Provide specific guidance based on error type
+      let errorMessage = 'Failed to add passkey. Please try again.';
+      
+      if (err instanceof Error) {
+        const errMsg = err.message.toLowerCase();
+        if (errMsg.includes('abort') || errMsg.includes('cancel')) {
+          errorMessage = 'Passkey creation was cancelled. Try again when ready.';
+        } else if (errMsg.includes('not supported') || errMsg.includes('not available')) {
+          errorMessage = 'Your browser doesn\'t support passkeys. Try using Chrome, Safari, or Edge.';
+        } else if (errMsg.includes('credential') && errMsg.includes('exists')) {
+          errorMessage = 'A passkey already exists for this device.';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
