@@ -16,7 +16,7 @@ interface AppHeaderProps {
 export function AppHeader({ user, onSignOut }: AppHeaderProps) {
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
+      <div className="container mx-auto flex h-14 items-center">
         <Link href="/" className="flex items-center space-x-2">
           <BookOpen className="h-6 w-6" />
           <span className="font-bold text-xl">ReVerse</span>
