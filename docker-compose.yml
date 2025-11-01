@@ -22,7 +22,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: development
+      target: builder
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/appdb
       NODE_ENV: production
