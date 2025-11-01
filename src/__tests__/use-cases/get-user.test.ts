@@ -54,6 +54,7 @@ describe('GetUserUseCase', () => {
         name: 'Test User',
         emailVerified: false,
         image: null,
+        isAnonymous: false,
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,

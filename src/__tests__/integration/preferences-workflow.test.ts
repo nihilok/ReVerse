@@ -41,6 +41,11 @@ describe('Preferences Workflow Integration Tests', () => {
     email: 'test@example.com',
     name: 'Test User',
     isAnonymous: false,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    emailVerified: true,
+    image: null,
+    deletedAt: null,
   };
 
   const mockPreferences = {
