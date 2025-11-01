@@ -21,6 +21,7 @@ interface ChatModalProps {
   isLoading?: boolean;
   title?: string;
   reference?: string;
+  passageText?: string;
 }
 
 export function ChatModal({
@@ -31,6 +32,7 @@ export function ChatModal({
   isLoading,
   title = "Chat",
   reference,
+  passageText,
 }: ChatModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -44,6 +46,7 @@ export function ChatModal({
             onSendMessage={onSendMessage}
             isLoading={isLoading}
             reference={reference}
+            passageText={passageText}
           />
         </div>
       </DialogContent>
