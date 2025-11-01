@@ -74,8 +74,14 @@ export default function ReaderPage() {
         credentials: 'include',
       });
       if (response.ok) {
-        const data = await response.json();
-        setInsights(data.map((insight: any) => ({
+        const data = await response.json() as Array<{
+          id: string;
+          passageReference: string;
+          translation?: string;
+          createdAt: string;
+          isFavorite?: boolean;
+        }>;
+        setInsights(data.map((insight) => ({
           id: insight.id,
           passageReference: insight.passageReference,
           translation: insight.translation || 'WEB',
@@ -98,8 +104,14 @@ export default function ReaderPage() {
         credentials: 'include',
       });
       if (response.ok) {
-        const data = await response.json();
-        setChats(data.map((chat: any) => ({
+        const data = await response.json() as Array<{
+          id: string;
+          title?: string;
+          passageReference?: string;
+          createdAt: string;
+          messageCount?: number;
+        }>;
+        setChats(data.map((chat) => ({
           id: chat.id,
           title: chat.title || 'Untitled Chat',
           passageReference: chat.passageReference,
@@ -119,7 +131,7 @@ export default function ReaderPage() {
    */
   useEffect(() => {
     refreshInsights();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   /**
@@ -127,7 +139,7 @@ export default function ReaderPage() {
    */
   useEffect(() => {
     refreshChats();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   const handleSearch = async (params: {
@@ -199,11 +211,20 @@ export default function ReaderPage() {
         credentials: 'include',
       });
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json() as {
+          chat: {
+            passageReference?: string;
+            passageText?: string;
+          };
+          messages: Array<{
+            role: 'user' | 'assistant';
+            content: string;
+          }>;
+        };
         setCurrentChatId(id);
         setCurrentPassageReference(data.chat.passageReference || '');
         setCurrentPassageText(data.chat.passageText || '');
-        setChatMessages(data.messages.map((msg: any) => ({
+        setChatMessages(data.messages.map((msg) => ({
           role: msg.role,
           content: msg.content,
         })));
