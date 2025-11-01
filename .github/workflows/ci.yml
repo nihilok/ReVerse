@@ -1,3 +1,15 @@
+# CI/CD Workflow for ReVerse Application
+#
+# Required GitHub Secrets:
+# - PASSKEY_RP_ID: Domain for WebAuthn/Passkey authentication (e.g., "localhost" for testing)
+#
+# To add secrets:
+# 1. Go to Repository Settings → Secrets and variables → Actions
+# 2. Click "New repository secret"
+# 3. Add PASSKEY_RP_ID with value "localhost"
+#
+# See .github/SECRETS.md for detailed instructions
+
 name: CI
 
 on:
@@ -58,6 +70,7 @@ jobs:
       - name: Build application
         run: npm run build
         env:
+          PASSKEY_RP_ID: ${{ secrets.PASSKEY_RP_ID }}
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/appdb_test
           BETTER_AUTH_SECRET: test-secret-key-min-32-chars-long-for-ci
           BETTER_AUTH_URL: http://localhost:3000
@@ -83,6 +96,7 @@ jobs:
           push: false
           tags: app-template:latest
           build-args: |
+            PASSKEY_RP_ID=${{ secrets.PASSKEY_RP_ID }}
             BETTER_AUTH_SECRET=testcisupersecretvalue32charsorlonger
             BETTER_AUTH_URL=http://localhost:3000
             DATABASE_URL=postgresql://postgres:postgres@localhost:5432/appdb_test
