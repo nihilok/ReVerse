@@ -18,6 +18,20 @@ services:
       timeout: 5s
       retries: 5
 
+  migrations:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/appdb
+      NODE_ENV: production
+    command: npm run db:migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
   app:
     build:
       context: .
@@ -34,7 +48,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/appdb
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-production-secret-key-min-32-chars-change-me-please}
-      BETTER_AUTH_URL: http://localhost:3000
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-${BETTER_AUTH_URL}}
       NODE_ENV: production
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       PASSKEY_RP_ID: ${PASSKEY_RP_ID:-localhost}
@@ -43,6 +57,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
 
 volumes:
   postgres_data:
