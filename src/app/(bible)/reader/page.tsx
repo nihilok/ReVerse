@@ -23,13 +23,14 @@ export default function ReaderPage() {
   const [showInsightsModal, setShowInsightsModal] = useState(false);
   const [currentInsight, setCurrentInsight] = useState<InsightData | null>(null);
   const [isLoadingInsight, setIsLoadingInsight] = useState(false);
-  const [insights] = useState<Array<{
+  const [insights, setInsights] = useState<Array<{
     id: string;
     passageReference: string;
     translation: string;
     createdAt: Date;
     isFavorite: boolean;
   }>>([]);
+  const [isLoadingInsights, setIsLoadingInsights] = useState(false);
 
   // Chat state
   const [showChatModal, setShowChatModal] = useState(false);
@@ -38,13 +39,14 @@ export default function ReaderPage() {
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [currentPassageText, setCurrentPassageText] = useState<string>("");
   const [currentPassageReference, setCurrentPassageReference] = useState<string>("");
-  const [chats] = useState<Array<{
+  const [chats, setChats] = useState<Array<{
     id: string;
     title: string;
     passageReference?: string;
     createdAt: Date;
     messageCount: number;
   }>>([]);
+  const [isLoadingChats, setIsLoadingChats] = useState(false);
 
   // Sidebar state
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -61,6 +63,70 @@ export default function ReaderPage() {
       chapter: currentChapter,
       translation: currentTranslation,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Helper function to refresh insights list
+  const refreshInsights = async () => {
+    setIsLoadingInsights(true);
+    try {
+      const response = await fetch('/api/insights?limit=50', {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setInsights(data.map((insight: any) => ({
+          id: insight.id,
+          passageReference: insight.passageReference,
+          translation: insight.translation || 'WEB',
+          createdAt: new Date(insight.createdAt),
+          isFavorite: insight.isFavorite || false,
+        })));
+      }
+    } catch (error) {
+      console.error('Failed to fetch insights:', error);
+    } finally {
+      setIsLoadingInsights(false);
+    }
+  };
+
+  // Helper function to refresh chats list
+  const refreshChats = async () => {
+    setIsLoadingChats(true);
+    try {
+      const response = await fetch('/api/chat?limit=50', {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setChats(data.map((chat: any) => ({
+          id: chat.id,
+          title: chat.title || 'Untitled Chat',
+          passageReference: chat.passageReference,
+          createdAt: new Date(chat.createdAt),
+          messageCount: chat.messageCount || 0,
+        })));
+      }
+    } catch (error) {
+      console.error('Failed to fetch chats:', error);
+    } finally {
+      setIsLoadingChats(false);
+    }
+  };
+
+  /**
+   * Load historical insights on mount
+   */
+  useEffect(() => {
+    refreshInsights();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /**
+   * Load historical chats on mount
+   */
+  useEffect(() => {
+    refreshChats();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -100,10 +166,26 @@ export default function ReaderPage() {
     handleSearch({ book, chapter, translation: currentTranslation });
   };
 
-  const handleViewInsight = (id: string) => {
-    // Fetch and display insight - will be implemented when insights are loaded
-    console.log("View insight:", id);
-    setShowInsightsModal(true);
+  const handleViewInsight = async (id: string) => {
+    setIsLoadingInsight(true);
+    try {
+      const response = await fetch(`/api/insights/${id}`, {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const insight = await response.json();
+        setCurrentInsight(insight);
+        setShowInsightsModal(true);
+      } else {
+        console.error('Failed to fetch insight');
+        alert('Failed to load insight. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error fetching insight:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setIsLoadingInsight(false);
+    }
   };
 
   const handleStartChat = (id: string) => {
@@ -111,13 +193,39 @@ export default function ReaderPage() {
     setShowChatModal(true);
   };
 
-  const handleOpenChat = (id: string) => {
-    setCurrentChatId(id);
-    setShowChatModal(true);
+  const handleOpenChat = async (id: string) => {
+    try {
+      const response = await fetch(`/api/chat/${id}`, {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentChatId(id);
+        setCurrentPassageReference(data.chat.passageReference || '');
+        setCurrentPassageText(data.chat.passageText || '');
+        setChatMessages(data.messages.map((msg: any) => ({
+          role: msg.role,
+          content: msg.content,
+        })));
+        setShowChatModal(true);
+      } else {
+        console.error('Failed to fetch chat');
+        alert('Failed to load chat. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error fetching chat:', error);
+      alert('An error occurred. Please try again.');
+    }
   };
 
   const handleSendMessage = async (message: string) => {
     if (isSendingMessage) return;
+
+    // Add user's message immediately to the UI
+    setChatMessages((prev) => [
+      ...prev,
+      { role: 'user', content: message },
+    ]);
 
     setIsSendingMessage(true);
     try {
@@ -139,17 +247,24 @@ export default function ReaderPage() {
         if (response.ok) {
           const result = await response.json();
           setCurrentChatId(result.data.chat.id);
-          setChatMessages([
-            { role: 'user', content: result.data.userMessage.content },
+          // Add AI response to the messages (user message already added above)
+          setChatMessages((prev) => [
+            ...prev,
             { role: 'assistant', content: result.data.aiMessage.content },
           ]);
+          // Refresh chats list to show the new chat
+          refreshChats();
         } else if (response.status === 401) {
           console.error('Authentication required. Please refresh the page.');
           alert('Session expired. Please refresh the page to continue.');
+          // Remove the optimistically added message on error
+          setChatMessages((prev) => prev.slice(0, -1));
         } else {
           const errorText = await response.text();
           console.error('Failed to create chat:', errorText);
           alert('Failed to create chat. Please try again.');
+          // Remove the optimistically added message on error
+          setChatMessages((prev) => prev.slice(0, -1));
         }
       } else {
         // Existing chat - send message
@@ -164,23 +279,29 @@ export default function ReaderPage() {
 
         if (response.ok) {
           const result = await response.json();
+          // Add AI response to the messages (user message already added above)
           setChatMessages((prev) => [
             ...prev,
-            { role: 'user', content: message },
-            { role: 'assistant', content: result.response },
+            { role: 'assistant', content: result.aiMessage.content },
           ]);
         } else if (response.status === 401) {
           console.error('Authentication required. Please refresh the page.');
           alert('Session expired. Please refresh the page to continue.');
+          // Remove the optimistically added message on error
+          setChatMessages((prev) => prev.slice(0, -1));
         } else {
           const errorText = await response.text();
           console.error('Failed to send message:', errorText);
           alert('Failed to send message. Please try again.');
+          // Remove the optimistically added message on error
+          setChatMessages((prev) => prev.slice(0, -1));
         }
       }
     } catch (error) {
       console.error('Error sending message:', error);
       alert('An error occurred. Please try again.');
+      // Remove the optimistically added message on error
+      setChatMessages((prev) => prev.slice(0, -1));
     } finally {
       setIsSendingMessage(false);
     }
@@ -207,6 +328,8 @@ export default function ReaderPage() {
         const result = await response.json();
         setCurrentInsight(result.data);
         setShowInsightsModal(true);
+        // Refresh insights list to show the new insight
+        refreshInsights();
       } else if (response.status === 401) {
         console.error('Authentication required. Please refresh the page.');
         alert('Session expired. Please refresh the page to continue.');
@@ -255,12 +378,14 @@ export default function ReaderPage() {
               insights={insights}
               onViewInsight={handleViewInsight}
               onStartChat={handleStartChat}
+              isLoading={isLoadingInsights}
             />
           }
           chatsPanel={
             <ChatList
               chats={chats}
               onOpenChat={handleOpenChat}
+              isLoading={isLoadingChats}
             />
           }
         />

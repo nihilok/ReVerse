@@ -67,15 +67,15 @@ export function AppSidebar({
             </TabsList>
 
             <TabsContent value="search" className="flex-1 overflow-y-auto p-4">
-              {searchPanel || <p className="text-muted-foreground">Search panel</p>}
+              {searchPanel ?? <p className="text-muted-foreground">Search panel</p>}
             </TabsContent>
 
             <TabsContent value="insights" className="flex-1 overflow-y-auto p-4">
-              {insightsPanel || <p className="text-muted-foreground">Insights history</p>}
+              {insightsPanel ?? <p className="text-muted-foreground">Insights history</p>}
             </TabsContent>
 
             <TabsContent value="chats" className="flex-1 overflow-y-auto p-4">
-              {chatsPanel || <p className="text-muted-foreground">Chat history</p>}
+              {chatsPanel ?? <p className="text-muted-foreground">Chat history</p>}
             </TabsContent>
           </Tabs>
         </Card>
