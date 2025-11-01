@@ -11,6 +11,7 @@ interface Chat {
   title: string;
   passageReference?: string;
   createdAt: string;
+  messageCount: number;
 }
 
 interface ChatMessage {
@@ -127,8 +128,7 @@ export default function ChatsHistoryPage() {
             chats={chats.map(c => ({
               ...c,
               createdAt: new Date(c.createdAt),
-              // messageCount intentionally omitted; not available from API
-              messageCount: 0,
+              messageCount: c.messageCount,
             }))}
             onOpenChat={handleOpenChat}
             onDelete={handleDelete}

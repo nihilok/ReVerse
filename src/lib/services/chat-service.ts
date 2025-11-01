@@ -206,10 +206,10 @@ class ChatService {
   }
   
   /**
-   * Get user's chats
+   * Get user's chats with message counts
    */
-  async getUserChats(userId: string, limit: number = 50): Promise<Chat[]> {
-    return await db.query.chats.findMany({
+  async getUserChats(userId: string, limit: number = 50): Promise<Array<Chat & { messageCount: number }>> {
+    const userChats = await db.query.chats.findMany({
       where: and(
         eq(chats.userId, userId),
         isNull(chats.deletedAt)
@@ -217,6 +217,22 @@ class ChatService {
       orderBy: [desc(chats.updatedAt)],
       limit,
     });
+
+    // Get message counts for each chat
+    return await Promise.all(
+      userChats.map(async (chat) => {
+        const messages = await db.query.chatMessages.findMany({
+          where: and(
+            eq(chatMessages.chatId, chat.id),
+            isNull(chatMessages.deletedAt)
+          ),
+        });
+        return {
+          ...chat,
+          messageCount: messages.length,
+        };
+      })
+    );
   }
   
   /**
