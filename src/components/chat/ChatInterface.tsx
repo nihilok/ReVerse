@@ -16,6 +16,7 @@ interface ChatInterfaceProps {
   onSendMessage: (message: string) => void;
   isLoading?: boolean;
   reference?: string;
+  passageText?: string;
 }
 
 export function ChatInterface({
@@ -23,6 +24,7 @@ export function ChatInterface({
   onSendMessage,
   isLoading,
   reference,
+  passageText,
 }: ChatInterfaceProps) {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -46,8 +48,15 @@ export function ChatInterface({
   return (
     <div className="flex flex-col h-full">
       {reference && (
-        <div className="px-4 py-2 border-b bg-muted/50">
-          <p className="text-sm text-muted-foreground">Chatting about: {reference}</p>
+        <div className="px-4 py-3 border-b bg-muted/50">
+          <p className="text-sm font-medium text-muted-foreground mb-1">
+            Chatting about: {reference}
+          </p>
+          {passageText && (
+            <p className="text-sm italic text-muted-foreground/80">
+              &ldquo;{passageText}&rdquo;
+            </p>
+          )}
         </div>
       )}
 

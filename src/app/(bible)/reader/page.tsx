@@ -35,8 +35,9 @@ export default function ReaderPage() {
   const [showChatModal, setShowChatModal] = useState(false);
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   const [chatMessages, setChatMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([]);
-  const [isLoadingChat, setIsLoadingChat] = useState(false);
   const [isSendingMessage, setIsSendingMessage] = useState(false);
+  const [currentPassageText, setCurrentPassageText] = useState<string>("");
+  const [currentPassageReference, setCurrentPassageReference] = useState<string>("");
   const [chats] = useState<Array<{
     id: string;
     title: string;
@@ -116,28 +117,54 @@ export default function ReaderPage() {
   };
 
   const handleSendMessage = async (message: string) => {
-    if (!currentChatId || isSendingMessage) return;
+    if (isSendingMessage) return;
 
     setIsSendingMessage(true);
     try {
-      const response = await fetch(`/api/chat/${currentChatId}/message`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message }),
-      });
+      // If no chat ID exists, this is the first message - create the chat
+      if (!currentChatId) {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstMessage: message,
+            passageText: currentPassageText,
+            passageReference: currentPassageReference,
+          }),
+        });
 
-      if (response.ok) {
-        const result = await response.json();
-        // Add both user and assistant messages
-        setChatMessages((prev) => [
-          ...prev,
-          { role: 'user', content: message },
-          { role: 'assistant', content: result.response },
-        ]);
+        if (response.ok) {
+          const result = await response.json();
+          setCurrentChatId(result.data.chat.id);
+          setChatMessages([
+            { role: 'user', content: message },
+            { role: 'assistant', content: result.data.response },
+          ]);
+        } else {
+          console.error('Failed to create chat:', await response.text());
+        }
       } else {
-        console.error('Failed to send message:', await response.text());
+        // Existing chat - send message
+        const response = await fetch(`/api/chat/${currentChatId}/message`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ message }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          setChatMessages((prev) => [
+            ...prev,
+            { role: 'user', content: message },
+            { role: 'assistant', content: result.response },
+          ]);
+        } else {
+          console.error('Failed to send message:', await response.text());
+        }
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -176,42 +203,15 @@ export default function ReaderPage() {
     }
   };
 
-  const handleAskQuestion = async (text: string, reference: string) => {
-    if (!passage || isLoadingChat) return;
-
-    setIsLoadingChat(true);
-    try {
-      // Construct a question about the selected passage
-      const question = `What does this passage mean? "${text}"`;
-      
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstMessage: question,
-          passageText: text,
-          passageReference: reference,
-        }),
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        setCurrentChatId(result.data.chat.id);
-        setChatMessages([
-          { role: 'user', content: question },
-          { role: 'assistant', content: result.data.response },
-        ]);
-        setShowChatModal(true);
-      } else {
-        console.error('Failed to create chat:', await response.text());
-      }
-    } catch (error) {
-      console.error('Error creating chat:', error);
-    } finally {
-      setIsLoadingChat(false);
-    }
+  const handleAskQuestion = (text: string, reference: string) => {
+    // Store the passage context for the chat
+    setCurrentPassageText(text);
+    setCurrentPassageReference(reference);
+    // Reset chat state for new conversation
+    setCurrentChatId(null);
+    setChatMessages([]);
+    // Open the chat modal - user will type their question
+    setShowChatModal(true);
   };
 
   return (
@@ -285,7 +285,10 @@ export default function ReaderPage() {
         onClose={() => setShowChatModal(false)}
         messages={chatMessages}
         onSendMessage={handleSendMessage}
+        isLoading={isSendingMessage}
         title="Chat"
+        reference={currentPassageReference}
+        passageText={currentPassageText}
       />
     </div>
   );
