@@ -1,19 +1,7 @@
 @import "tailwindcss";
 
-/* Typography and border radius - set at theme level */
+/* Default to light mode colors */
 @theme {
-  /* Typography - elegant serif fonts for biblical content */
-  --font-sans: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-
-  /* Border radius - slightly more refined */
-  --radius-lg: 0.75rem;
-  --radius-md: 0.5rem;
-  --radius-sm: 0.25rem;
-}
-
-/* Default to light mode colors using CSS custom properties */
-:root {
   /* Light mode colors - inspired by ancient manuscripts, parchment, and illuminated texts */
   /* Warm cream/parchment background with rich burgundy and gold accents */
   --color-background: oklch(97% 0.015 75); /* Warm cream, like aged parchment */
@@ -35,6 +23,15 @@
   --color-border: oklch(88% 0.02 60); /* Subtle warm border */
   --color-input: oklch(95% 0.015 70);
   --color-ring: oklch(42% 0.15 25); /* Burgundy focus ring */
+
+  /* Typography - elegant serif fonts for biblical content */
+  --font-sans: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
+  /* Border radius - slightly more refined */
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.25rem;
 }
 
 /* Base styles */
@@ -177,7 +174,7 @@
 
 /* Dark mode theme - supports both class-based and media query */
 @media (prefers-color-scheme: dark) {
-  :root:not(.light) {
+  @theme {
     --color-background: oklch(18% 0.02 30); /* Deep warm brown background */
     --color-foreground: oklch(95% 0.01 75); /* Warm cream text */
     --color-card: oklch(22% 0.02 30); /* Slightly lighter for cards */
@@ -200,8 +197,9 @@
   }
 }
 
-/* Class-based dark mode for manual toggle */
+/* Class-based dark mode for manual toggle - use raw CSS custom properties */
 .dark {
+  color-scheme: dark;
   --color-background: oklch(18% 0.02 30);
   --color-foreground: oklch(95% 0.01 75);
   --color-card: oklch(22% 0.02 30);
