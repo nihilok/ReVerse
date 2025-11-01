@@ -20,25 +20,15 @@ CMD ["npm", "run", "db:migrate"]
 # Builder stage
 FROM base AS builder
 
-# Accept build arguments
-ARG BETTER_AUTH_SECRET
-ARG BETTER_AUTH_URL=http://localhost:3000
-ARG DATABASE_URL
-ARG PASSKEY_RP_ID
-ARG ANTHROPIC_API_KEY
-
 # Set build-time environment variables
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
-ENV BETTER_AUTH_URL=${BETTER_AUTH_URL}
-ENV DATABASE_URL=${DATABASE_URL}
-ENV PASSKEY_RP_ID=${PASSKEY_RP_ID}
-ENV ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build the application
+# Note: Next.js only bundles NEXT_PUBLIC_* vars at build time
+# Server-side env vars are read at runtime
 RUN npm run build
 
 # Production stage
