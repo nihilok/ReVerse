@@ -43,6 +43,7 @@ export async function GET() {
         { status: 401 }
       );
     }
+    console.error('Error fetching preferences:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -80,10 +81,7 @@ export async function PUT(request: NextRequest) {
       // Update existing preferences
       const [updated] = await db
         .update(userPreferences)
-        .set({
-          ...validatedData,
-          updatedAt: new Date(),
-        })
+        .set(validatedData)
         .where(eq(userPreferences.userId, user.id))
         .returning();
       result = updated;
@@ -103,6 +101,7 @@ export async function PUT(request: NextRequest) {
         { status: 400 }
       );
     }
+    console.error('Error updating preferences:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
