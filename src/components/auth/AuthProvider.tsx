@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { authClient } from '@/lib/auth/client';
 
 /**
@@ -8,6 +8,8 @@ import { authClient } from '@/lib/auth/client';
  * This ensures users can start using the app immediately without explicit authentication
  */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [isInitialized, setIsInitialized] = useState(false);
+
   useEffect(() => {
     const initAuth = async () => {
       try {
@@ -23,13 +25,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (error) {
         console.error('Failed to initialize auth:', error);
+        // Still mark as initialized even on error to avoid blocking the UI
+      } finally {
+        setIsInitialized(true);
       }
     };
 
     initAuth();
   }, []);
 
-  // We render children even before initialization to avoid blocking the UI
-  // The session check is async and shouldn't prevent the app from rendering
+  // Show a minimal loading state while initializing auth
+  // This prevents 401 errors when users try to interact too quickly
+  if (!isInitialized) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
   return <>{children}</>;
 }
