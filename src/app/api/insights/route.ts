@@ -56,16 +56,15 @@ export async function POST(request: NextRequest) {
   try {
     const user = await requireAuth();
     const body = await request.json();
-
     const validatedData = createInsightSchema.parse(body);
-    
+
     // Check if we should prompt for passkey BEFORE creating the insight
     const shouldPrompt = await shouldPromptForPasskey(
       user.id,
       user.isAnonymous ?? false,
       'save_insight'
     );
-    
+
     const insight = await insightsService.getOrCreateInsight({
       userId: user.id,
       passageText: validatedData.passageText,

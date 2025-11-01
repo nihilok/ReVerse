@@ -26,7 +26,9 @@ export default function SettingsPage() {
 
   const loadPreferences = async () => {
     try {
-      const response = await fetch('/api/preferences');
+      const response = await fetch('/api/preferences', {
+        credentials: 'include',
+      });
       if (response.ok) {
         const data = await response.json();
         setDefaultTranslation(data.defaultTranslation || "WEB");
@@ -46,6 +48,7 @@ export default function SettingsPage() {
       const response = await fetch('/api/preferences', {
         method: 'PUT',
         headers: {
+        credentials: 'include',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

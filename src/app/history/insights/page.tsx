@@ -37,7 +37,9 @@ export default function InsightsHistoryPage() {
         ...(showFavoritesOnly && { favoriteOnly: "true" }),
       });
 
-      const response = await fetch(`/api/insights?${params}`);
+      const response = await fetch(`/api/insights?${params}`, {
+        credentials: 'include',
+      });
       if (response.ok) {
         const data = await response.json();
         setInsights(data);
@@ -55,7 +57,9 @@ export default function InsightsHistoryPage() {
 
   const handleViewInsight = async (id: string) => {
     try {
-      const response = await fetch(`/api/insights/${id}`);
+      const response = await fetch(`/api/insights/${id}`, {
+        credentials: 'include',
+      });
       if (response.ok) {
         const data = await response.json();
         setSelectedInsight(data);
@@ -70,6 +74,7 @@ export default function InsightsHistoryPage() {
     try {
       const response = await fetch(`/api/insights/${id}`, {
         method: "PATCH",
+        credentials: 'include',
       });
       if (response.ok) {
         loadInsights();
@@ -90,6 +95,7 @@ export default function InsightsHistoryPage() {
     try {
       const response = await fetch(`/api/insights/${insightToDelete}`, {
         method: "DELETE",
+        credentials: 'include',
       });
       if (response.ok) {
         loadInsights();

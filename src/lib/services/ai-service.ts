@@ -105,7 +105,7 @@ PRACTICAL_APPLICATION: [your analysis]`;
       const prompt = this.buildInsightPrompt(request);
       
       const message = await this.getClient().messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 1500,
         messages: [
           {
@@ -186,7 +186,7 @@ Answer questions thoughtfully and in depth. Draw from biblical scholarship, theo
       });
       
       const response = await this.getClient().messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 2000,
         system: systemPrompt,
         messages,
@@ -248,7 +248,7 @@ Answer questions thoughtfully and in depth. Draw from biblical scholarship, theo
       });
       
       const response = await this.getClient().messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 2000,
         system: systemPrompt,
         messages,
@@ -269,7 +269,7 @@ Answer questions thoughtfully and in depth. Draw from biblical scholarship, theo
   async generateChatTitle(firstMessage: string): Promise<string> {
     try {
       const response = await this.getClient().messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 50,
         messages: [
           {
