@@ -217,7 +217,7 @@ PORT=3001 npm run dev
 
 **Solution:**
 - Ensure all required environment variables are in your `.env` file
-- Pass them to docker-compose: `docker-compose --env-file .env up --build`
+- Pass them to docker compose: `docker compose --env-file .env up --build`
 
 ## Production Deployment Issues
 
