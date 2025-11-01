@@ -202,9 +202,47 @@ For quick schema updates in development:
 npm run db:push
 ```
 
-## Docker
+## Deployment
 
-### Development
+### Quick Deploy with Script
+
+The easiest way to deploy is using the deployment script:
+
+```bash
+# Deploy to production
+./scripts/deploy.sh -d reverse.jarv.dev -k sk-ant-your-api-key
+
+# With custom database settings
+./scripts/deploy.sh -d myapp.com -k sk-ant-xxx \
+  --db-user myuser --db-password secret123 --db-name mydb
+
+# Deploy to custom port
+./scripts/deploy.sh -d myapp.com -p 3001 -k sk-ant-xxx
+```
+
+The script will:
+- Generate a secure auth secret (or use provided one)
+- Create `.env.production` with all variables
+- Build and start Docker containers
+- Run database migrations
+- Verify deployment
+
+**Options:**
+- `-d, --domain` - Your domain (required)
+- `-k, --api-key` - Anthropic API key (required)
+- `-p, --port` - NextJS port (default: 3000)
+- `-s, --secret` - Auth secret (auto-generated if not provided)
+- `--db-user` - PostgreSQL user (default: postgres)
+- `--db-password` - PostgreSQL password (default: postgres)
+- `--db-name` - PostgreSQL database (default: appdb)
+- `--no-build` - Skip rebuilding images
+- `--no-migrate` - Skip running migrations
+
+Run `./scripts/deploy.sh --help` for all options.
+
+### Manual Deployment
+
+#### Development
 
 ```bash
 # Start all services
@@ -214,12 +252,49 @@ docker-compose up
 docker-compose up postgres
 ```
 
-### Production
+#### Production
 
 ```bash
-# Build and start
-docker-compose up --build app
+# 1. Copy and configure environment
+cp .env.production.example .env.production
+# Edit .env.production with your values
+
+# 2. Build and start
+docker-compose up --build -d
+
+# 3. View logs
+docker-compose logs -f app
 ```
+
+### Reverse Proxy Setup (Nginx)
+
+If deploying behind a reverse proxy with SSL termination, ensure your Nginx config includes:
+
+```nginx
+location / {
+    proxy_pass http://localhost:3000;
+    
+    # Required for authentication to work
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
+```
+
+See [docs/NGINX_PROXY_FIX.md](./docs/NGINX_PROXY_FIX.md) for complete Nginx setup.
+
+### Troubleshooting
+
+- **401 Errors in Production?** See [docs/PRODUCTION_AUTH_ISSUES.md](./docs/PRODUCTION_AUTH_ISSUES.md)
+- **Nginx SSL Issues?** See [docs/NGINX_PROXY_FIX.md](./docs/NGINX_PROXY_FIX.md)
+- **Test Deployment:**
+  ```bash
+  ./scripts/test-proxy-headers.sh https://yourapp.com
+  ```
+
+For detailed deployment documentation, see [docs/docker.md](./docs/docker.md).
 
 ## Testing
 
