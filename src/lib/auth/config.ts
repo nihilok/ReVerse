@@ -118,15 +118,29 @@ function initializeAuth() {
 
 // Export a proxy that lazily initializes auth on first access
 let isInitialized = false;
-export const auth = new Proxy({} as ReturnType<typeof betterAuth>, {
+export const auth = new Proxy(() => {}, {
   get(target, prop) {
-    // On first access, initialize and copy all properties to the target
+    // On first access, initialize the auth instance
+    if (!isInitialized) {
+      const instance = initializeAuth();
+      // Copy all properties from the instance to the target
+      Object.assign(target, instance);
+      isInitialized = true;
+    }
+    return (target as Record<string, unknown>)[prop];
+  },
+  apply(target, thisArg, args) {
+    // Handle function calls - initialize if needed and call the handler
     if (!isInitialized) {
       const instance = initializeAuth();
       Object.assign(target, instance);
       isInitialized = true;
     }
-    return target[prop as keyof typeof target];
+    // If the auth instance itself is callable, call it
+    if (typeof target === 'function') {
+      return target.apply(thisArg, args);
+    }
+    throw new Error('Auth instance is not callable');
   },
-});
+}) as ReturnType<typeof betterAuth>;
 
