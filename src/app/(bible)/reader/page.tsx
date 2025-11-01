@@ -128,6 +128,7 @@ export default function ReaderPage() {
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({
             firstMessage: message,
             passageText: currentPassageText,
@@ -139,8 +140,8 @@ export default function ReaderPage() {
           const result = await response.json();
           setCurrentChatId(result.data.chat.id);
           setChatMessages([
-            { role: 'user', content: message },
-            { role: 'assistant', content: result.data.response },
+            { role: 'user', content: result.data.userMessage.content },
+            { role: 'assistant', content: result.data.aiMessage.content },
           ]);
         } else if (response.status === 401) {
           console.error('Authentication required. Please refresh the page.');
@@ -156,6 +157,7 @@ export default function ReaderPage() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+          credentials: 'include',
           },
           body: JSON.stringify({ message }),
         });
@@ -192,6 +194,7 @@ export default function ReaderPage() {
       const response = await fetch('/api/insights', {
         method: 'POST',
         headers: {
+        credentials: 'include',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

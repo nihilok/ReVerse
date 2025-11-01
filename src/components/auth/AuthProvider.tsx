@@ -15,13 +15,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         // Check if user has an existing session
         const session = await authClient.getSession();
-        
+
         if (!session?.data) {
           // Automatically sign in anonymously
           await authClient.signIn.anonymous();
-          console.log('User signed in anonymously');
-        } else {
-          console.log('Existing session found:', session.data.user.isAnonymous ? 'anonymous' : 'authenticated');
         }
       } catch (error) {
         console.error('Failed to initialize auth:', error);

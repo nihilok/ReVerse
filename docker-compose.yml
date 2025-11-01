@@ -3,7 +3,6 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: app-template-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
@@ -28,6 +27,8 @@ services:
         BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-production-secret-key-min-32-chars-change-me-please}
         BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
         DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/appdb}
+        ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+        PASSKEY_RP_ID: ${PASSKEY_RP_ID:-localhost}
     container_name: app-template-app
     restart: unless-stopped
     environment:
@@ -35,6 +36,8 @@ services:
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-production-secret-key-min-32-chars-change-me-please}
       BETTER_AUTH_URL: http://localhost:3000
       NODE_ENV: production
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      PASSKEY_RP_ID: ${PASSKEY_RP_ID:-localhost}
     ports:
       - "3000:3000"
     depends_on:

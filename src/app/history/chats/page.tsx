@@ -50,7 +50,9 @@ export default function ChatsHistoryPage() {
 
   const handleOpenChat = async (id: string) => {
     try {
-      const response = await fetch(`/api/chat/${id}`);
+      const response = await fetch(`/api/chat/${id}`, {
+        credentials: 'include',
+      });
       if (response.ok) {
         const data = await response.json();
         setSelectedChat(data.chat);
@@ -71,6 +73,7 @@ export default function ChatsHistoryPage() {
       const response = await fetch(`/api/chat/${selectedChatId}/message`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: 'include',
         body: JSON.stringify({ message }),
       });
 
@@ -96,6 +99,7 @@ export default function ChatsHistoryPage() {
     try {
       const response = await fetch(`/api/chat/${chatToDelete}`, {
         method: "DELETE",
+        credentials: 'include',
       });
       if (response.ok) {
         loadChats();

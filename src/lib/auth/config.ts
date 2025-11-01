@@ -3,6 +3,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { anonymous } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
 import { db } from '@/infrastructure/database/client';
+import * as schema from '@/infrastructure/database/schema';
 import { migrateAnonymousUserData } from './migrate-anonymous-data';
 
 const secret = process.env.BETTER_AUTH_SECRET || 'development-secret-key-min-32-chars-long-please-change';
@@ -30,7 +31,9 @@ if (process.env.NODE_ENV === 'production' && !process.env.PASSKEY_RP_ID) {
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
+    schema: schema,
     provider: 'pg',
+    usePlural: true,
   }),
   emailAndPassword: {
     enabled: true,
@@ -38,6 +41,22 @@ export const auth = betterAuth({
   },
   trustedOrigins: [baseURL],
   secret,
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // Update session once per day
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60, // 5 minutes cache
+    },
+  },
+  advanced: {
+    // Ensure cookies work properly in all environments
+    useSecureCookies: process.env.NODE_ENV === 'production',
+    database: {
+      // Let PostgreSQL generate UUIDs via defaultRandom()
+      generateId: false,
+    },
+  },
   plugins: [
     // Enable anonymous authentication
     anonymous({

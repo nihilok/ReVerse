@@ -54,16 +54,15 @@ export async function POST(request: NextRequest) {
   try {
     const user = await requireAuth();
     const body = await request.json();
-
     const validatedData = createChatSchema.parse(body);
-    
+
     // Check if we should prompt for passkey BEFORE creating the chat
     const shouldPrompt = await shouldPromptForPasskey(
       user.id,
       user.isAnonymous ?? false,
       'save_chat'
     );
-    
+
     const result = await chatService.createChat({
       userId: user.id,
       firstMessage: validatedData.firstMessage,

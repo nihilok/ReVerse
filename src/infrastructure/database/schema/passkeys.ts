@@ -13,6 +13,7 @@ export const passkeys = pgTable('passkeys', {
   deviceType: text('device_type').notNull(), // 'singleDevice' | 'multiDevice'
   backedUp: boolean('backed_up').notNull().default(false),
   transports: text('transports'), // JSON stringified array
+  aaguid: text('aaguid'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   lastUsedAt: timestamp('last_used_at'),
 }, (table) => ({
