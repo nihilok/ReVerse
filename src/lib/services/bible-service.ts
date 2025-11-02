@@ -194,6 +194,8 @@ class BibleService {
     
     return {
       reference,
+      book,
+      chapter,
       verses,
       translation,
     };
@@ -233,6 +235,8 @@ class BibleService {
     
     return {
       reference,
+      book,
+      chapter,
       verses,
       translation,
     };

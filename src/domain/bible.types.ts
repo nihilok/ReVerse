@@ -14,6 +14,8 @@ export type BibleVerse = z.infer<typeof bibleVerseSchema>;
 // Bible passage (collection of verses)
 export const biblePassageSchema = z.object({
   reference: z.string(),
+  book: z.string(),
+  chapter: z.number().int().positive(),
   verses: z.array(bibleVerseSchema),
   translation: z.string(),
 });
