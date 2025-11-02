@@ -118,7 +118,7 @@ function initializeAuth() {
 
 // Export a proxy that lazily initializes auth on first access
 let isInitialized = false;
-export const auth = new Proxy(() => {}, {
+export const auth = new Proxy(() => {} as unknown as ReturnType<typeof betterAuth>, {
   get(target, prop) {
     // On first access, initialize the auth instance
     if (!isInitialized) {
