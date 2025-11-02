@@ -55,6 +55,9 @@ services:
 
       # Node
       NODE_ENV: production
+      
+      # Debug logging
+      DEBUG: ${DEBUG:-false}
     ports:
       - "${NEXTJS_PORT:-3000}:3000"
     depends_on:

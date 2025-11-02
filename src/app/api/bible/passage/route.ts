@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { bibleService } from '@/lib/services/bible-service';
 import { passageQuerySchema } from '@/domain/bible.types';
+import { debugLog, debugError } from '@/lib/debug';
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,7 +16,10 @@ export async function GET(request: NextRequest) {
       translation: searchParams.get('translation') || 'WEB',
     };
 
+    debugLog('API', 'Bible passage request', params);
+
     if (!params.book || !params.chapter) {
+      debugLog('API', 'Missing required parameters');
       return NextResponse.json(
         { error: 'Book and chapter are required' },
         { status: 400 }
@@ -29,14 +33,22 @@ export async function GET(request: NextRequest) {
     const passage = await bibleService.getPassage(validatedParams);
 
     if (!passage) {
+      debugLog('API', 'Passage not found', validatedParams);
       return NextResponse.json(
         { error: 'Passage not found' },
         { status: 404 }
       );
     }
 
+    debugLog('API', 'Passage retrieved successfully', {
+      book: passage.book,
+      chapter: passage.chapter,
+      verseCount: passage.verses.length,
+    });
+
     return NextResponse.json(passage);
   } catch (error) {
+    debugError('API', 'Error fetching passage', error);
     if (error instanceof Error) {
       return NextResponse.json(
         { error: error.message },
