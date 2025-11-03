@@ -3,8 +3,6 @@ import type { NextRequest } from 'next/server';
 import { debugLog } from '@/lib/debug';
 
 export function middleware(request: NextRequest) {
-  const start = Date.now();
-  
   debugLog('REQUEST', `${request.method} ${request.nextUrl.pathname}`, {
     method: request.method,
     path: request.nextUrl.pathname,
@@ -15,15 +13,7 @@ export function middleware(request: NextRequest) {
     },
   });
 
-  const response = NextResponse.next();
-  
-  const duration = Date.now() - start;
-  debugLog('RESPONSE', `${request.method} ${request.nextUrl.pathname} - ${duration}ms`, {
-    duration,
-    status: response.status,
-  });
-
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {
