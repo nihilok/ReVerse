@@ -59,9 +59,9 @@ export class AuditLogger {
       entityType: params.entityType.trim(),
       entityId: params.entityId.trim(),
       actorId: params.actorId.trim(),
-      oldValues: params.oldValues ?? null,
-      newValues: params.newValues ?? null,
-      metadata: params.metadata ?? null,
+      oldValues: params.oldValues,
+      newValues: params.newValues,
+      metadata: params.metadata,
     };
 
     return await this.auditLogRepository.create(auditLogData);

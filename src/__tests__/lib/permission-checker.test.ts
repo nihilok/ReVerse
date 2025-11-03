@@ -97,15 +97,15 @@ describe('PermissionChecker', () => {
       ).resolves.not.toThrow();
     });
 
-    it('should throw Forbidden error when user does not have permission', async () => {
+    it('should throw Not Found error when user does not have permission', async () => {
       vi.mocked(mockCheckPermissionUseCase.execute).mockResolvedValue(false);
 
       await expect(
         permissionChecker.require('user-123', 'users', 'write')
-      ).rejects.toThrow('Forbidden');
+      ).rejects.toThrow('Not Found');
     });
 
-    it('should throw generic Forbidden error without details', async () => {
+    it('should throw generic Not Found error without details', async () => {
       vi.mocked(mockCheckPermissionUseCase.execute).mockResolvedValue(false);
 
       try {
@@ -113,7 +113,7 @@ describe('PermissionChecker', () => {
         expect.fail('Should have thrown an error');
       } catch (error) {
         expect(error).toBeInstanceOf(Error);
-        expect((error as Error).message).toBe('Forbidden');
+        expect((error as Error).message).toBe('Not Found');
         // Verify no information leakage about resource, action, or user
         expect((error as Error).message).not.toContain('user');
         expect((error as Error).message).not.toContain('write');
@@ -240,10 +240,11 @@ describe('PermissionChecker', () => {
       expect(result).toBe(false);
     });
 
-    it('should return false for empty checks array', async () => {
-      const result = await permissionChecker.hasAll('user-123', []);
-
-      expect(result).toBe(false);
+    it('should throw error for empty checks array', async () => {
+      await expect(
+        permissionChecker.hasAll('user-123', [])
+      ).rejects.toThrow('hasAll requires at least one permission check');
+      
       // Should not call checkMultiple for empty array
       expect(mockCheckPermissionUseCase.checkMultiple).not.toHaveBeenCalled();
     });
@@ -288,10 +289,11 @@ describe('PermissionChecker', () => {
       expect(result).toBe(false);
     });
 
-    it('should return false for empty checks array', async () => {
-      const result = await permissionChecker.hasAny('user-123', []);
-
-      expect(result).toBe(false);
+    it('should throw error for empty checks array', async () => {
+      await expect(
+        permissionChecker.hasAny('user-123', [])
+      ).rejects.toThrow('hasAny requires at least one permission check');
+      
       // Should not call checkMultiple for empty array
       expect(mockCheckPermissionUseCase.checkMultiple).not.toHaveBeenCalled();
     });
@@ -320,7 +322,7 @@ describe('PermissionChecker', () => {
 
       await expect(
         permissionChecker.require('user-123', 'users', 'read')
-      ).rejects.toThrow('Forbidden');
+      ).rejects.toThrow('Not Found');
 
       // Verify that check() caught the error and logged it internally
       // require() then throws 'Forbidden' based on check() returning false

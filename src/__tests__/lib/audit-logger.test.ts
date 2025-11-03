@@ -74,7 +74,7 @@ describe('AuditLogger', () => {
         actorId,
         oldValues: null,
         newValues,
-        metadata: null,
+        metadata: undefined,
         timestamp: new Date(),
       };
 
@@ -89,7 +89,7 @@ describe('AuditLogger', () => {
         actorId,
         oldValues: null,
         newValues,
-        metadata: null,
+        metadata: undefined,
       });
     });
   });

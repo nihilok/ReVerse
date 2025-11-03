@@ -88,8 +88,10 @@ export class AuditLogRepository {
   async findAll(limit = 100, offset = 0): Promise<AuditLog[]> {
     // Validate and clamp limit and offset
     const MAX_LIMIT = 1000;
-    const safeLimit = Math.max(1, Math.min(Number(limit) || 100, MAX_LIMIT));
-    const safeOffset = Math.max(0, Number.isNaN(Number(offset)) ? 0 : Number(offset));
+    const numLimit = Number(limit);
+    const numOffset = Number(offset);
+    const safeLimit = Math.max(1, Math.min(Number.isNaN(numLimit) ? 100 : numLimit, MAX_LIMIT));
+    const safeOffset = Math.max(0, Number.isNaN(numOffset) ? 0 : numOffset);
 
     return await this.db
       .select()

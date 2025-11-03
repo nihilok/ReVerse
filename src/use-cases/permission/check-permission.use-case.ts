@@ -7,11 +7,6 @@ import { Permission } from '@/infrastructure/database/schema/permissions';
  * Business logic for checking if a user has a specific permission.
  * This use case enforces the business rule: "A user has a permission if they 
  * are assigned to at least one role that has that permission."
- * 
- * Security considerations:
- * - Uses constant-time comparison where possible
- * - Returns consistent result structure
- * - Does not leak information about user existence or role assignments
  */
 export class CheckPermissionUseCase {
   constructor(private readonly permissionRepository: PermissionRepository) {}
@@ -33,17 +28,9 @@ export class CheckPermissionUseCase {
     const userPermissions = await this.permissionRepository.getUserPermissions(userId);
 
     // Check if any permission matches the requested resource and action
-    // Using full iteration (not short-circuiting) to maintain constant-time characteristics
-    // and prevent timing attacks based on permission position in the array
-    let hasPermission = false;
-    for (const permission of userPermissions) {
-      if (permission.resource === resource && permission.action === action) {
-        hasPermission = true;
-        // Continue iterating instead of breaking to maintain constant time
-      }
-    }
-
-    return hasPermission;
+    return userPermissions.some(
+      (permission) => permission.resource === resource && permission.action === action
+    );
   }
 
   /**
