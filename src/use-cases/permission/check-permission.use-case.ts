@@ -70,19 +70,16 @@ export class CheckPermissionUseCase {
   ): Promise<Record<string, boolean>> {
     const userPermissions = await this.permissionRepository.getUserPermissions(userId);
 
+    // Preprocess permissions into a Set for O(1) lookups
+    const permissionSet = new Set(
+      userPermissions.map(p => `${p.resource}:${p.action}`)
+    );
+
     const results: Record<string, boolean> = {};
 
     for (const check of checks) {
       const key = `${check.resource}:${check.action}`;
-      // Using full iteration (not short-circuiting) to maintain constant-time characteristics
-      let hasPermission = false;
-      for (const permission of userPermissions) {
-        if (permission.resource === check.resource && permission.action === check.action) {
-          hasPermission = true;
-          // Continue iterating instead of breaking to maintain constant time
-        }
-      }
-      results[key] = hasPermission;
+      results[key] = permissionSet.has(key);
     }
 
     return results;
