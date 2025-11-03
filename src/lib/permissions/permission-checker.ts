@@ -88,7 +88,7 @@ export class PermissionChecker {
    * @param userId - The user ID to check
    * @param resource - The resource name
    * @param action - The action name
-   * @throws Error with message 'Forbidden' if permission is denied
+   * @throws Error with message 'Not Found' if permission is denied
    */
   async require(
     userId: string,
@@ -98,8 +98,8 @@ export class PermissionChecker {
     const hasPermission = await this.check(userId, resource, action);
 
     if (!hasPermission) {
-      // Generic error message that doesn't leak information
-      throw new Error('Forbidden');
+      // Generic error message that doesn't leak information (returns 404 instead of 403)
+      throw new Error('Not Found');
     }
   }
 
@@ -152,20 +152,22 @@ export class PermissionChecker {
   /**
    * Check if user has ALL of the specified permissions
    * 
-   * Note: Returns false for empty arrays because requiring "all" of zero permissions
-   * is logically undefined. This prevents accidental authorization bypass through
-   * empty permission arrays.
+   * Note: Throws an error for empty arrays to make invalid input explicit.
+   * Empty permission arrays are typically a programming error and should not
+   * silently pass or fail authorization checks.
    * 
    * @param userId - The user ID to check
    * @param checks - Array of {resource, action} pairs
-   * @returns true only if user has ALL permissions, false if checks array is empty
+   * @returns true only if user has ALL permissions
+   * @throws Error if checks array is empty
    */
   async hasAll(
     userId: string,
     checks: Array<{ resource: string; action: string }>
   ): Promise<boolean> {
-    // Guard against empty array - requiring "all" of zero permissions should be false
-    if (checks.length === 0) return false;
+    if (checks.length === 0) {
+      throw new Error('hasAll requires at least one permission check');
+    }
     
     const results = await this.checkMultiple(userId, checks);
     return Object.values(results).every((hasPermission) => hasPermission);
@@ -174,20 +176,22 @@ export class PermissionChecker {
   /**
    * Check if user has ANY of the specified permissions
    * 
-   * Note: Returns false for empty arrays because having "any" of zero permissions
-   * is logically undefined. This prevents accidental authorization bypass through
-   * empty permission arrays.
+   * Note: Throws an error for empty arrays to make invalid input explicit.
+   * Empty permission arrays are typically a programming error and should not
+   * silently pass or fail authorization checks.
    * 
    * @param userId - The user ID to check
    * @param checks - Array of {resource, action} pairs
-   * @returns true if user has at least one permission, false if checks array is empty
+   * @returns true if user has at least one permission
+   * @throws Error if checks array is empty
    */
   async hasAny(
     userId: string,
     checks: Array<{ resource: string; action: string }>
   ): Promise<boolean> {
-    // Guard against empty array - having "any" of zero permissions should be false
-    if (checks.length === 0) return false;
+    if (checks.length === 0) {
+      throw new Error('hasAny requires at least one permission check');
+    }
     
     const results = await this.checkMultiple(userId, checks);
     return Object.values(results).some((hasPermission) => hasPermission);

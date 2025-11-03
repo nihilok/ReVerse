@@ -72,7 +72,7 @@ export class UserController {
    * 
    * @param actorId - The ID of the user performing the action (for permission check)
    * @param input - User creation input
-   * @throws Error with message 'Forbidden' if actor lacks 'users:write' permission
+   * @throws Error with message 'Not Found' if actor lacks 'users:write' permission
    */
   async createUser(actorId: string, input: CreateUserInput): Promise<User> {
     // Permission check happens in controller (Imperative Shell)
@@ -101,7 +101,7 @@ export class UserController {
    * Use cases are only needed when there are business rules to enforce.
    * 
    * @param actorId - The ID of the user performing the action (for permission check)
-   * @throws Error with message 'Forbidden' if actor lacks 'users:read' permission
+   * @throws Error with message 'Not Found' if actor lacks 'users:read' permission
    */
   async getAllUsers(actorId: string): Promise<User[]> {
     // Permission check happens in controller (Imperative Shell)
@@ -116,7 +116,7 @@ export class UserController {
    * 
    * @param actorId - The ID of the user performing the action (for permission check)
    * @param id - The ID of the user to retrieve
-   * @throws Error with message 'Forbidden' if actor lacks 'users:read' permission
+   * @throws Error with message 'Not Found' if actor lacks 'users:read' permission
    */
   async getUserById(actorId: string, id: string): Promise<User | null> {
     // Permission check happens in controller (Imperative Shell)
@@ -131,7 +131,7 @@ export class UserController {
    * 
    * @param actorId - The ID of the user performing the action (for permission check)
    * @param email - The email of the user to retrieve
-   * @throws Error with message 'Forbidden' if actor lacks 'users:read' permission
+   * @throws Error with message 'Not Found' if actor lacks 'users:read' permission
    */
   async getUserByEmail(actorId: string, email: string): Promise<User | null> {
     // Permission check happens in controller (Imperative Shell)
@@ -145,10 +145,17 @@ export class UserController {
    * Coordinates: permission check, existence check, update operation, audit logging
    * Note: Input validation happens at the API layer
    * 
+   * Note on redundant fetch: This method fetches the user before calling the use case,
+   * which also fetches it internally. This is an accepted tradeoff to maintain separation
+   * of concerns - the use case validates existence as part of its business logic,
+   * while the controller needs old values for audit logging. Alternative approaches
+   * (having use case return both values, or passing oldUser to use case) would couple
+   * the layers more tightly.
+   * 
    * @param actorId - The ID of the user performing the action (for permission check)
    * @param id - The ID of the user to update
    * @param input - Update input data
-   * @throws Error with message 'Forbidden' if actor lacks 'users:write' permission
+   * @throws Error with message 'Not Found' if actor lacks 'users:write' permission
    */
   async updateUser(actorId: string, id: string, input: UpdateUserInput): Promise<User | null> {
     // Permission check happens in controller (Imperative Shell)
@@ -178,9 +185,14 @@ export class UserController {
    * Delete a user (soft delete)
    * Coordinates: permission check, existence check, soft delete operation, audit logging
    * 
+   * Note on redundant fetch: This method fetches the user before calling the use case,
+   * which also fetches it internally. This is an accepted tradeoff to maintain separation
+   * of concerns - the use case validates existence as part of its business logic,
+   * while the controller needs old values (before deletion) for audit logging.
+   * 
    * @param actorId - The ID of the user performing the action (for permission check)
    * @param id - The ID of the user to delete
-   * @throws Error with message 'Forbidden' if actor lacks 'users:delete' permission
+   * @throws Error with message 'Not Found' if actor lacks 'users:delete' permission
    */
   async deleteUser(actorId: string, id: string): Promise<User | null> {
     // Permission check happens in controller (Imperative Shell)
