@@ -89,7 +89,7 @@ export class AuditLogRepository {
     // Validate and clamp limit and offset
     const MAX_LIMIT = 1000;
     const safeLimit = Math.max(1, Math.min(Number(limit) || 100, MAX_LIMIT));
-    const safeOffset = Math.max(0, Number(offset) || 0);
+    const safeOffset = Math.max(0, Number.isNaN(Number(offset)) ? 0 : Number(offset));
 
     return await this.db
       .select()
