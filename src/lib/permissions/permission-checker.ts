@@ -152,6 +152,10 @@ export class PermissionChecker {
   /**
    * Check if user has ALL of the specified permissions
    * 
+   * Note: Returns false for empty arrays because requiring "all" of zero permissions
+   * is logically undefined. This prevents accidental authorization bypass through
+   * empty permission arrays.
+   * 
    * @param userId - The user ID to check
    * @param checks - Array of {resource, action} pairs
    * @returns true only if user has ALL permissions, false if checks array is empty
@@ -169,6 +173,10 @@ export class PermissionChecker {
 
   /**
    * Check if user has ANY of the specified permissions
+   * 
+   * Note: Returns false for empty arrays because having "any" of zero permissions
+   * is logically undefined. This prevents accidental authorization bypass through
+   * empty permission arrays.
    * 
    * @param userId - The user ID to check
    * @param checks - Array of {resource, action} pairs
