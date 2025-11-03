@@ -74,11 +74,15 @@ export class CheckPermissionUseCase {
 
     for (const check of checks) {
       const key = `${check.resource}:${check.action}`;
-      results[key] = userPermissions.some(
-        (permission) =>
-          permission.resource === check.resource &&
-          permission.action === check.action
-      );
+      // Using full iteration (not short-circuiting) to maintain constant-time characteristics
+      let hasPermission = false;
+      for (const permission of userPermissions) {
+        if (permission.resource === check.resource && permission.action === check.action) {
+          hasPermission = true;
+          // Continue iterating instead of breaking to maintain constant time
+        }
+      }
+      results[key] = hasPermission;
     }
 
     return results;
