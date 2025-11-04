@@ -3,7 +3,7 @@ import { chatService } from '@/lib/services/chat-service';
 import { requireAuth, requireFullAuth } from '@/lib/auth/server';
 import { z } from 'zod';
 import { shouldPromptForPasskey, createPasskeyPromptResponse } from '@/lib/auth/check-prompt-passkey';
-import { debugLog } from '@/lib/debug';
+import { createApiLogger } from '@/lib/api-logger';
 
 const createChatSchema = z.object({
   firstMessage: z.string(),
@@ -18,9 +18,7 @@ const listChatsSchema = z.object({
 
 // GET /api/chat - List user's chats
 export async function GET(request: NextRequest) {
-  const startTime = Date.now();
-  const method = request.method;
-  const path = request.nextUrl.pathname;
+  const { logResponse } = createApiLogger(request);
   
   try {
     const user = await requireAuth();
@@ -33,41 +31,25 @@ export async function GET(request: NextRequest) {
     const validatedParams = listChatsSchema.parse(params);
     const chats = await chatService.getUserChats(user.id, validatedParams.limit);
 
-    const duration = Date.now() - startTime;
-    debugLog('RESPONSE', `${method} ${path} - ${duration}ms`, {
-      duration,
-      status: 200,
-    });
-    
+    logResponse(200);
     return NextResponse.json(chats);
   } catch (error) {
-    const duration = Date.now() - startTime;
-    
     if (error instanceof Error && error.message === 'Authentication required') {
-      debugLog('RESPONSE', `${method} ${path} - ${duration}ms`, {
-        duration,
-        status: 401,
-      });
+      logResponse(401);
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
     if (error instanceof Error) {
-      debugLog('RESPONSE', `${method} ${path} - ${duration}ms`, {
-        duration,
-        status: 400,
-      });
+      logResponse(400);
       return NextResponse.json(
         { error: error.message },
         { status: 400 }
       );
     }
     
-    debugLog('RESPONSE', `${method} ${path} - ${duration}ms`, {
-      duration,
-      status: 500,
-    });
+    logResponse(500);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -77,9 +59,7 @@ export async function GET(request: NextRequest) {
 
 // POST /api/chat - Create new chat
 export async function POST(request: NextRequest) {
-  const startTime = Date.now();
-  const method = request.method;
-  const path = request.nextUrl.pathname;
+  const { logResponse } = createApiLogger(request);
   
   try {
     // Use requireFullAuth to get isAnonymous field for passkey prompt check
@@ -111,41 +91,25 @@ export async function POST(request: NextRequest) {
       response.passkeyPrompt = createPasskeyPromptResponse();
     }
 
-    const duration = Date.now() - startTime;
-    debugLog('RESPONSE', `${method} ${path} - ${duration}ms`, {
-      duration,
-      status: 201,
-    });
-    
+    logResponse(201);
     return NextResponse.json(response, { status: 201 });
   } catch (error) {
-    const duration = Date.now() - startTime;
-    
     if (error instanceof Error && error.message === 'Authentication required') {
-      debugLog('RESPONSE', `${method} ${path} - ${duration}ms`, {
-        duration,
-        status: 401,
-      });
+      logResponse(401);
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
     if (error instanceof Error) {
-      debugLog('RESPONSE', `${method} ${path} - ${duration}ms`, {
-        duration,
-        status: 400,
-      });
+      logResponse(400);
       return NextResponse.json(
         { error: error.message },
         { status: 400 }
       );
     }
     
-    debugLog('RESPONSE', `${method} ${path} - ${duration}ms`, {
-      duration,
-      status: 500,
-    });
+    logResponse(500);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
