@@ -81,11 +81,15 @@ Rather than implementing new authentication features, the focus was on **validat
 
 ### Test Execution
 - ✅ **Total Tests**: 241 (239 passing, 2 skipped)
+  - **Functional/Behavioral Tests**: 205
+  - **Specification/Trivial Tests**: 36<sup>†</sup>
 - ✅ **New Tests**: 148 added
 - ✅ **Test Files**: 18 total (5 new)
 - ✅ **Pass Rate**: 99.2% (2 intentionally skipped)
 - ✅ **Lint**: Clean (0 errors, 0 warnings)
 - ✅ **Security Scan**: No vulnerabilities detected
+
+<sup>†</sup> _Note: Of the total 241 tests, 36 are specification or trivial tests (e.g., `expect(true).toBe(true)` or constant checks) that serve as documentation or scaffolding rather than validating actual behavior. The remaining 205 tests are functional and validate real authentication logic, security, and edge cases. Test statistics and pass rate include both categories for transparency. See individual test files for further breakdown._
 
 ### Checklist Status
 
@@ -141,9 +145,9 @@ The following are fully implemented and tested:
 - ✅ Session security (cookies, tokens, expiration)
 - ✅ Multi-device support
 
-## What's Validated But Not Yet Implemented
+## What's Specified But Not Yet Implemented
 
-The tests validate the design for these features, but they're not yet implemented in the codebase:
+The tests document the design for these features through specification tests, but they're not yet implemented in the codebase:
 
 1. **Session Management API** (Medium Priority)
    - `GET /api/auth/sessions` - List user's sessions
