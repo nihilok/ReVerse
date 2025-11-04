@@ -2,19 +2,24 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { GET, POST } from '@/app/api/insights/route';
 import * as authServer from '@/lib/auth/server';
-import * as debugLib from '@/lib/debug';
+import * as apiLogger from '@/lib/api-logger';
 
 // Mock the dependencies
 vi.mock('@/lib/auth/server');
 vi.mock('@/lib/services/insights-service');
-vi.mock('@/lib/debug');
+vi.mock('@/lib/api-logger');
 vi.mock('@/lib/auth/check-prompt-passkey');
 
 describe('Insights API Response Logging', () => {
-  const mockDebugLog = vi.mocked(debugLib.debugLog);
+  const mockLogResponse = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
+    
+    // Mock createApiLogger to return our mock logResponse function
+    vi.mocked(apiLogger.createApiLogger).mockReturnValue({
+      logResponse: mockLogResponse,
+    });
   });
 
   describe('GET /api/insights', () => {
@@ -29,15 +34,8 @@ describe('Insights API Response Logging', () => {
 
       expect(response.status).toBe(401);
       
-      // Verify RESPONSE was logged with 401 status
-      expect(mockDebugLog).toHaveBeenCalledWith(
-        'RESPONSE',
-        expect.stringContaining('GET /api/insights'),
-        expect.objectContaining({
-          status: 401,
-          duration: expect.any(Number),
-        })
-      );
+      // Verify response was logged with 401 status
+      expect(mockLogResponse).toHaveBeenCalledWith(401);
     });
 
     it('should log 200 status when request succeeds', async () => {
@@ -61,15 +59,8 @@ describe('Insights API Response Logging', () => {
 
       expect(response.status).toBe(200);
       
-      // Verify RESPONSE was logged with 200 status
-      expect(mockDebugLog).toHaveBeenCalledWith(
-        'RESPONSE',
-        expect.stringContaining('GET /api/insights'),
-        expect.objectContaining({
-          status: 200,
-          duration: expect.any(Number),
-        })
-      );
+      // Verify response was logged with 200 status
+      expect(mockLogResponse).toHaveBeenCalledWith(200);
     });
   });
 
@@ -92,15 +83,8 @@ describe('Insights API Response Logging', () => {
 
       expect(response.status).toBe(401);
       
-      // Verify RESPONSE was logged with 401 status
-      expect(mockDebugLog).toHaveBeenCalledWith(
-        'RESPONSE',
-        expect.stringContaining('POST /api/insights'),
-        expect.objectContaining({
-          status: 401,
-          duration: expect.any(Number),
-        })
-      );
+      // Verify response was logged with 401 status
+      expect(mockLogResponse).toHaveBeenCalledWith(401);
     });
 
     it('should log 201 status when insight is created successfully', async () => {
@@ -113,6 +97,7 @@ describe('Insights API Response Logging', () => {
         image: null,
         createdAt: new Date(),
         updatedAt: new Date(),
+        deletedAt: null,
         isAnonymous: false,
       });
 
@@ -130,9 +115,10 @@ describe('Insights API Response Logging', () => {
         historicalContext: 'Test context',
         theologicalSignificance: 'Test significance',
         practicalApplication: 'Test application',
-        favorite: false,
+        isFavorite: false,
         createdAt: new Date(),
         updatedAt: new Date(),
+        deletedAt: null,
       });
 
       const request = new NextRequest('http://localhost:3000/api/insights', {
@@ -147,15 +133,8 @@ describe('Insights API Response Logging', () => {
 
       expect(response.status).toBe(201);
       
-      // Verify RESPONSE was logged with 201 status
-      expect(mockDebugLog).toHaveBeenCalledWith(
-        'RESPONSE',
-        expect.stringContaining('POST /api/insights'),
-        expect.objectContaining({
-          status: 201,
-          duration: expect.any(Number),
-        })
-      );
+      // Verify response was logged with 201 status
+      expect(mockLogResponse).toHaveBeenCalledWith(201);
     });
   });
 });
