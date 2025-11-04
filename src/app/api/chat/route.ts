@@ -48,7 +48,6 @@ export async function GET(request: NextRequest) {
         { status: 400 }
       );
     }
-    
     logResponse(500);
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -108,7 +107,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
     logResponse(500);
     return NextResponse.json(
       { error: 'Internal server error' },
