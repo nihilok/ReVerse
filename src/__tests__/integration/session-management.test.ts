@@ -1,7 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { db } from '@/infrastructure/database/client';
-import { sessions, users } from '@/infrastructure/database/schema';
-import { eq, and, lt } from 'drizzle-orm';
 
 /**
  * Integration tests for session management functionality

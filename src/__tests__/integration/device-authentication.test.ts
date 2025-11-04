@@ -1,8 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { auth } from '@/lib/auth/config';
-import { db } from '@/infrastructure/database/client';
-import { sessions, users, passkeys } from '@/infrastructure/database/schema';
-import { eq, and, isNull, lt } from 'drizzle-orm';
+import { describe, it, expect } from 'vitest';
 
 /**
  * Integration tests for device-based authentication
