@@ -44,10 +44,12 @@ Example output:
 [2025-11-02T12:30:01.000Z] [DB] Query: SELECT * FROM users WHERE id = $1
 ```
 
-### HTTP Requests
+### HTTP Requests and Responses
 - All incoming requests (method, path, query params)
 - Request headers (user-agent, content-type)
-- Response times and status codes
+- Response times and actual status codes
+
+**Note:** Response logging happens inside API route handlers (not middleware) to ensure accurate status codes are captured.
 
 Example output:
 ```
@@ -58,6 +60,10 @@ Example output:
   "query": { "book": "John", "chapter": "3" }
 }
 [2025-11-02T12:30:05.150Z] [RESPONSE] GET /api/bible/passage - 150ms
+{
+  "duration": 150,
+  "status": 200
+}
 ```
 
 ### API Operations

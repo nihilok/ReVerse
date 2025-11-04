@@ -20,23 +20,27 @@ Enhanced database client with:
 - Connection test on startup
 - Automatic error reporting
 
-### 3. Request/Response Middleware (`src/middleware.ts`)
-Added Next.js middleware for HTTP logging:
+### 3. Request Middleware (`src/middleware.ts`)
+Added Next.js middleware for HTTP request logging:
 - All incoming requests (method, path, query params)
 - Selected headers (user-agent, content-type)
-- Response timing
-- Status codes
+
+**Note:** Response logging is NOT done in middleware because `NextResponse.next()` returns immediately before route handlers execute. Instead, response logging happens inside individual API route handlers.
 
 **Scope:**
 - All API routes (`/api/:path*`)
 - All pages (except static assets)
 
-### 4. API Route Example (`src/app/api/bible/passage/route.ts`)
-Demonstrated debug logging in API routes:
-- Parameter logging
-- Validation logging
-- Success/failure logging
-- Error details
+### 4. API Route Response Logging
+Each API route handler logs its own responses with accurate status codes:
+- Response timing (duration from request start to response)
+- Actual status codes (200, 201, 400, 401, 500, etc.)
+- Logged for both success and error cases
+
+**Examples:**
+- `src/app/api/insights/route.ts` - Logs responses for GET and POST
+- `src/app/api/chat/route.ts` - Logs responses for GET and POST
+- `src/app/api/bible/passage/route.ts` - Logs API operations
 
 ### 5. Docker Configuration
 **docker-compose.yml:**
