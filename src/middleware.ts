@@ -13,6 +13,9 @@ export function middleware(request: NextRequest) {
     },
   });
 
+  // Note: Response logging is done in individual API route handlers
+  // NextResponse.next() returns immediately (before route handlers execute)
+  // so we can't log actual response status codes here
   return NextResponse.next();
 }
 
